@@ -13,6 +13,8 @@ from rest_framework import permissions
 from .models import Company
 
 # Create your views here.
+
+
 class CompanyRegistrationView(APIView):
 
     def get(self, request, formate=None):
@@ -32,10 +34,8 @@ class CompanyRegistrationView(APIView):
             company = serializer.save()
             if company:
                 json = serializer.data
-                status_code = status.HTTP_201_CREATED
-                msg = 'Company Created'
-                return Response({'status': status_code, 'msg': msg,  'data': json},
-                                status=status_code)
+                return Response({'status': status.HTTP_201_CREATED, 'msg': 'Company Created',  'data': json},
+                                status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

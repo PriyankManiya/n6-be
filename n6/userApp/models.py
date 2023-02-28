@@ -2,19 +2,20 @@ from django.db import models
 
 # ERD -> User_Level table
 # stores all roles for the user accounts
+
+
 class UserRole(models.Model):
     role = models.CharField(max_length=255)
-
 
 
 # ERD -> User table
 # stores all user details for user account
 # TODO add company foreign key after company table has been created
 class User(models.Model):
-    first_name = models.CharField(max_length=255)
-    last_name = models.CharField(max_length=255)
-    email_address = models.CharField(max_length=255)
-    mobile_num = models.CharField(max_length=255)
+    first_name = models.CharField(max_length=255, blank=True, null=True)
+    last_name = models.CharField(max_length=255, blank=True, null=True)
+    email_address = models.CharField(max_length=255, blank=True, null=True)
+    mobile_num = models.CharField(max_length=255, blank=True, null=True)
 
 
 # ERD -> Credential
