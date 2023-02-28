@@ -1,19 +1,10 @@
 from django.db import models
-from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
-
 
 # ERD -> User_Level table
 # stores all roles for the user accounts
 class UserRole(models.Model):
     role = models.CharField(max_length=255)
 
-
-# ERD -> Company table
-# stores all info about company
-class Company(models.Model):
-    name = models.CharField(max_length=255, blank=True, null=True)
-    email_address = models.CharField(max_length=255, blank=True, null=True)
-    mobile_num = models.CharField(max_length=255, blank=True, null=True)
 
 
 # ERD -> User table
