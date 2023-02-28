@@ -8,7 +8,8 @@ from django.contrib.auth.tokens import PasswordResetTokenGenerator
 
 # example
 class UserRegistrationSerializer(serializers.ModelSerializer):
-    password2 = serializers.CharField(style={'input_type': 'password'}, write_only=True)
+    password2 = serializers.CharField(
+        style={'input_type': 'password'}, write_only=True)
 
     class Meta:
         model = Company
@@ -23,7 +24,8 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         password = attrs.get('password')
         password2 = attrs.pop('password2')
         if password != password2:
-            raise serializers.ValidationError('Passwords and Confirm Password must match.')
+            raise serializers.ValidationError(
+                'Passwords and Confirm Password must match.')
         return attrs
 
     def create(self, validated_data):
@@ -31,26 +33,40 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
 
 class CompanyRegistrationSerializer(serializers.ModelSerializer):
-    # password2 = serializers.CharField(style={'input_type': 'password'}, write_only=True)
 
     class Meta:
         model = Company
         fields = ('name', 'email_address', 'mobile_num')
-        extra_kwargs = {
-            "name": {
-                "error_messages": {
-                    "required": "Company must have a name"
-                }
-            },
-            "email_address": {
-                "error_messages": {
-                    "required": "Company must have a valid email address"
-                }
-            },
-        }
 
     def create(self, validated_data):
-        return Company.objects.create_company(**validated_data)
+        
+        company = {}
+        company['name'] = validated_data.get('name')
+        company['email_address'] = validated_data.get('email_address')
+        company['mobile_num'] = validated_data.get('mobile_num')
+
+        if (company['name'] is None):
+            raise serializers.ValidationError(
+                {'error': 'Company must have a name', 'status': 400})
+        if (company['email_address'] is None):
+            raise serializers.ValidationError(
+                {'error': 'Company must have a valid email address', 'status': 400})
+        if (company['mobile_num'] is None):
+            company['mobile_num'] = 0
+
+        data = Company(**company)
+        data.save()
+
+        return data
+
+    def update(self, instance, validated_data):
+        instance.name = validated_data.get('name', instance.name)
+        instance.email_address = validated_data.get(
+            'email_address', instance.email_address)
+        instance.mobile_num = validated_data.get(
+            'mobile_num', instance.mobile_num)
+        instance.save()
+        return instance
 
 # class UserLoginSerializer(serializers.ModelSerializer):
 #     email = serializers.EmailField(max_length=255, min_length=3)

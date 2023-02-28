@@ -11,21 +11,9 @@ class UserRole(models.Model):
 # ERD -> Company table
 # stores all info about company
 class Company(models.Model):
-    name = models.CharField(max_length=255)
-    email_address = models.CharField(max_length=255)
-    mobile_num = models.CharField(max_length=255, default=None, blank=True, null=True)
-
-    def create_company(self, name, email_address, mobile_num):
-
-        company = self.model(
-            email_address=email_address,
-            name=name,
-            mobile_num=mobile_num,
-        )
-
-        company.save()
-        return company
-
+    name = models.CharField(max_length=255, blank=True, null=True)
+    email_address = models.CharField(max_length=255, blank=True, null=True)
+    mobile_num = models.CharField(max_length=255, blank=True, null=True)
 
 
 # ERD -> User table
