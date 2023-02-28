@@ -11,15 +11,16 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('first_name', 'last_name', 'email_address', 'mobile_num')
+        fields = ('first_name', 'last_name', 'email_address', 'mobile_num','company')
 
     def create(self, validated_data):
-
+        print(f"validated_data ::: {validated_data}")
         user = {}
         user['first_name'] = validated_data.get('first_name')
         user['last_name'] = validated_data.get('last_name')
         user['email_address'] = validated_data.get('email_address')
         user['mobile_num'] = validated_data.get('mobile_num')
+        user['company'] = validated_data.get('company')
 
         if (user['first_name'] is None):
             raise serializers.ValidationError(
@@ -27,6 +28,11 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         if (user['email_address'] is None):
             raise serializers.ValidationError(
                 {'error': 'User must have a valid email address', 'status': 400})
+            
+        print(f"user >>> company ::: {user['company']}")
+        if (user['company'] is None):
+            raise serializers.ValidationError(
+                {'error': 'Please provide a valid Company Id', 'status': 400})
 
         if (user['last_name'] is None):
             user['last_name'] = ''

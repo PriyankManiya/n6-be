@@ -1,5 +1,7 @@
 from django.db import models
 
+from companyApp.models import Company
+
 # ERD -> User_Level table
 # stores all roles for the user accounts
 
@@ -15,6 +17,7 @@ class User(models.Model):
     first_name = models.CharField(max_length=255, blank=True, null=True)
     last_name = models.CharField(max_length=255, blank=True, null=True)
     email_address = models.CharField(max_length=255, blank=True, null=True)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, blank=True, null=True)
     mobile_num = models.CharField(max_length=255, blank=True, null=True)
 
 
