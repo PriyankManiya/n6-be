@@ -3,11 +3,21 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from credApp.models import Credential
-from credApp.serializers import CredentialAppSerializer
+from . import serializers
 from userApp.models import UserRole, User
 from companyApp.models import Company
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth import authenticate
+from django.contrib.auth.hashers import check_password
 
-# Create your views here.
+
+def get_tokens_for_user(user):
+    refresh = RefreshToken.for_user(user)
+
+    return {
+        'refresh': str(refresh),
+        'access': str(refresh.access_token),
+    }
 
 
 class CredListApiView(APIView):
@@ -60,7 +70,7 @@ class CredApiView(APIView):
         try:
             cred_id = request.data.get('id')
             cred = Credential.objects.get(id=int(cred_id))
-            serializer = CredentialAppSerializer(
+            serializer = serializers.CredentialAppSerializer(
                 cred, data=request.data)
 
             if serializer.is_valid(raise_exception=True):
@@ -104,8 +114,7 @@ class CredApiView(APIView):
     def post(self, request, formate=None):
         try:
             data = request.data
-            print(f"data ::: {data}")
-            serializer = CredentialAppSerializer(data=data)
+            serializer = serializers.CredentialAppSerializer(data=data)
             if serializer.is_valid(raise_exception=True):
                 serializer.save()
                 return Response({'status': status.HTTP_200_OK, 'msg': 'Creds Data Saved', 'data': serializer.data}, status=status.HTTP_200_OK)
@@ -113,3 +122,38 @@ class CredApiView(APIView):
         except Exception as e:
             print(f"error ::: {e}")
             return Response({'status': status.HTTP_400_BAD_REQUEST, 'msg': 'Error Occured'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserLoginView(APIView):
+
+    def post(self, request, formate=None):
+
+        try:
+            username = request.data.get('user_name')
+            password = request.data.get('password')
+
+            user = Credential.objects.get(user_name=username)
+
+            password_matches = check_password(password, user.password)
+
+            if password_matches:
+                token = get_tokens_for_user(user)
+                return Response({'msg': 'Login Success', 'token': token}, status=status.HTTP_200_OK)
+            else:
+                return Response({'msg': 'Username or Password is not Valid'}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            print(f"error ::: {e} <<")
+            return Response({'msg': 'Username or Password is not Valid', 'error': 'Error Occured', 'status': status.HTTP_400_BAD_REQUEST}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserRegistrationView(APIView):
+
+    def post(self, request, formate=None):
+        serializer = serializers.UserRegistrationSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            user = serializer.save()
+            token = get_tokens_for_user(user)
+            if user:
+                json = serializer.data
+                return Response({'msg': 'Registration Success', 'token': token, 'data': json}, status=status.HTTP_201_CREATED)
+        return Response({'msg': 'Registration Failed', 'error': [serializer.errors], 'status': status.HTTP_400_BAD_REQUEST}, status=status.HTTP_400_BAD_REQUEST)

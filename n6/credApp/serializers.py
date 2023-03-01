@@ -1,3 +1,5 @@
+from django.contrib.auth.hashers import make_password
+
 from rest_framework import serializers
 from credApp.models import Credential
 
@@ -46,3 +48,63 @@ class CredentialAppSerializer(serializers.ModelSerializer):
     #         'mobile_num', instance.mobile_num)
     #     instance.save()
     #     return instance
+
+
+class UserLoginSerializer(serializers.ModelSerializer):
+    user_name = serializers.EmailField(max_length=255, min_length=3)
+
+    class Meta:
+        model = Credential
+        fields = ('user_name', 'password')
+        
+    def validate(self, attrs):
+        user = User.objects.get(username=username)
+
+
+class UserRegistrationSerializer(serializers.ModelSerializer):
+    password2 = serializers.CharField(
+        style={'input_type': 'password'}, write_only=True)
+
+    class Meta:
+        model = Credential
+        fields = ('user_name', 'password', 'password2', 'active_tf',
+                  'user', 'user_level')
+        extra_kwargs = {
+            'password': {'write_only': True},
+        }
+
+    # Validating Password and Password2
+    def validate(self, attrs):
+        password = attrs.get('password')
+        password2 = attrs.pop('password2')
+        if password != password2:
+            raise serializers.ValidationError(
+                'Passwords and Confirm Password must match.')
+        return attrs
+
+    def create(self, validated_data):
+        user_name = validated_data['user_name']
+        active_tf = validated_data['active_tf']
+        user = validated_data['user']
+        user_level = validated_data['user_level']
+        password = validated_data['password']
+
+        if not user_name:
+            raise ValueError('Users must have an user name')
+        if not user:
+            raise ValueError('Users must have an user id')
+        if not user_level:
+            raise ValueError('Users must have an user level id')
+
+        user = Credential(
+            user_name=user_name,
+            active_tf=active_tf,
+            user=user,
+            user_level=user_level,
+            password=make_password(password)
+        )
+
+        # user.set_password(password)
+        user.save()
+        return user
+        # return Credential.objects.create_user(**validated_data)
