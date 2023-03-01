@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'companyApp.apps.CompanyappConfig',
+    'credApp.apps.CredappConfig',
     'userApp.apps.UserappConfig',
 ]
 
@@ -87,7 +88,7 @@ DATABASES = {
         # 'ENGINE': 'django.db.backends.sqlite3',
         # 'NAME': BASE_DIR / 'db.sqlite3',
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'postgres',
+        'NAME': 'N6',
         'USER': 'kishan',
         'PASSWORD': 'Admin@123',
         'HOST': '127.0.0.1',

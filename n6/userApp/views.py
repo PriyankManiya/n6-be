@@ -8,11 +8,11 @@ from rest_framework import status
 from rest_framework.views import APIView
 from . import serializers
 from django.contrib.auth import authenticate
-from .renderers import UserJSONRenderer
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework import permissions
-from userApp.models import Credential, User, UserRole
+from userApp.models import User, UserRole
 from companyApp.models import Company
+import pprint
 
 
 # example
@@ -20,39 +20,31 @@ class UserApiView(APIView):
 
     def get(self, request, formate=None):
         try:
-            data = User.objects.values(
-                'id', 'first_name', 'last_name', 'email_address', 'mobile_num', 'company_id')
-
-            company_id = User.objects.values('company_id')[0]['company_id']
-            company = Company.objects.get(id=company_id)
-
-            x = [
-                {'id': obj['id'],
-                 'first_name': obj['first_name'],
-                 'last_name': obj['last_name'],
-                 'email_address': obj['email_address'],
-                 'mobile_num': obj['mobile_num'],
-                 'company_id': obj['company_id'],
-                 'company': {
-                    'name': company.name,
-                    'email_address': company.email_address,
-                    'mobile_num': company.mobile_num,
+            user_id = request.data.get('id')
+            user = User.objects.get(id=int(user_id))
+            serializer = serializers.UserRegistrationSerializer(
+                user, data=request.data)
+            if serializer.is_valid(raise_exception=True):
+                serializer.save()
+                company = Company.objects.get(id=1)
+                user = serializer.data
+                data = {
+                    **user,
+                    'company': {
+                        'name': company.name,
+                        'email_address': company.email_address,
+                        'mobile_num': company.mobile_num,
+                    }
                 }
-                }
-                for obj in data
-            ]
-
-            userList = list(x)
-            userList.sort(key=lambda x: -x['id'])
-            
-            return Response({'status': status.HTTP_200_OK, 'msg': 'User Data Fetched', 'data': userList}, status=status.HTTP_200_OK)
+                return Response({'status': status.HTTP_200_OK, 'msg': 'User Fetched', 'data': data}, status=status.HTTP_200_OK)
+            return Response({'status': status.HTTP_400_BAD_REQUEST, 'msg': 'Error While getting user'}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
-            print(f"error ::: {e}")
-            return Response({'status': status.HTTP_400_BAD_REQUEST, 'msg': 'Error Occured'}, status=status.HTTP_400_BAD_REQUEST)
+            print(f"error ::>: {e}")
+            return Response({'status': status.HTTP_400_BAD_REQUEST, 'msg': 'Please Provide Valid User Id'}, status=status.HTTP_400_BAD_REQUEST)
 
     def post(self, request, formate=None):
         company_id = request.data.get('company')
-        
+
         print(f"company ::: {company_id}")
 
         try:
@@ -86,3 +78,34 @@ class UserApiView(APIView):
             serializer.save()
             return Response({'status': status.HTTP_200_OK, 'msg': 'User Data Updated', 'data': serializer.data}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserListApiView(APIView):
+
+    def get(self, request, formate=None):
+        try:
+            data = User.objects.values(
+                'id', 'first_name', 'last_name', 'email_address', 'mobile_num', 'company_id')
+
+            company_id = User.objects.values('company_id')[0]['company_id']
+            company = Company.objects.get(id=company_id)
+
+            x = [
+                {
+                    **obj,
+                 'company': {
+                    'name': company.name,
+                    'email_address': company.email_address,
+                    'mobile_num': company.mobile_num,
+                }
+                }
+                for obj in data
+            ]
+
+            userList = list(x)
+            userList.sort(key=lambda x: -x['id'])
+
+            return Response({'status': status.HTTP_200_OK, 'msg': 'User Data Fetched', 'data': userList}, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(f"error ::: {e}")
+            return Response({'status': status.HTTP_400_BAD_REQUEST, 'msg': 'Error Occured'}, status=status.HTTP_400_BAD_REQUEST)
