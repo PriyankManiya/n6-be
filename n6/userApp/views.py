@@ -26,7 +26,8 @@ class UserApiView(APIView):
                 user, data=request.data)
             if serializer.is_valid(raise_exception=True):
                 serializer.save()
-                company = Company.objects.get(id=1)
+                company = Company.objects.get(
+                    id=int(serializer.data['company']))
                 user = serializer.data
                 data = {
                     **user,
@@ -86,24 +87,22 @@ class UserListApiView(APIView):
         try:
             data = User.objects.values(
                 'id', 'first_name', 'last_name', 'email_address', 'mobile_num', 'company_id')
+            temp = []
+            for i, obj in enumerate(data):
+                company_id = User.objects.values('company_id')[i]['company_id']
+                company = Company.objects.get(id=company_id)
+                temp.append(
+                    {
+                        **obj,
+                        'company': {
+                            'name': company.name,
+                            'email_address': company.email_address,
+                            'mobile_num': company.mobile_num,
+                        }
+                    })
 
-            company_id = User.objects.values('company_id')[0]['company_id']
-            company = Company.objects.get(id=company_id)
-
-            x = [
-                {
-                    **obj,
-                 'company': {
-                    'name': company.name,
-                    'email_address': company.email_address,
-                    'mobile_num': company.mobile_num,
-                }
-                }
-                for obj in data
-            ]
-
-            userList = list(x)
-            userList.sort(key=lambda x: -x['id'])
+            userList = list(temp)
+            userList.sort(key=lambda temp: -temp['id'])
 
             return Response({'status': status.HTTP_200_OK, 'msg': 'User Data Fetched', 'data': userList}, status=status.HTTP_200_OK)
         except Exception as e:
