@@ -50,16 +50,6 @@ class CredentialAppSerializer(serializers.ModelSerializer):
     #     return instance
 
 
-class UserLoginSerializer(serializers.ModelSerializer):
-    user_name = serializers.EmailField(max_length=255, min_length=3)
-
-    class Meta:
-        model = Credential
-        fields = ('user_name', 'password')
-        
-    def validate(self, attrs):
-        user = User.objects.get(username=username)
-
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(
