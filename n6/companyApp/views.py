@@ -14,11 +14,15 @@ from .models import Company
 import json
 import jsonpickle
 from json import JSONEncoder
+from credApp.renderers import UserJSONRenderer
+
 
 # Create your views here.
 
 
 class CompanyApiView(APIView):
+    renderer_classes = [UserJSONRenderer]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, formate=None):
         company_id = request.data.get('id')
@@ -64,6 +68,8 @@ class CompanyApiView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class CompanyListApiView(APIView):
+    renderer_classes = [UserJSONRenderer]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, formate=None):
         try:

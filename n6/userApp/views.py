@@ -7,16 +7,15 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 from . import serializers
-from django.contrib.auth import authenticate
-from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework import permissions
-from userApp.models import User, UserRole
+from userApp.models import User
 from companyApp.models import Company
-import pprint
+from credApp.renderers import UserJSONRenderer
 
 
-# example
 class UserApiView(APIView):
+    renderer_classes = [UserJSONRenderer]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, formate=None):
         try:
@@ -46,14 +45,11 @@ class UserApiView(APIView):
     def post(self, request, formate=None):
         company_id = request.data.get('company')
 
-        print(f"company ::: {company_id}")
-
         try:
             company = Company.objects.get(id=int(company_id))
         except Company.DoesNotExist:
             return Response({'status': status.HTTP_404_NOT_FOUND, 'msg': 'Company not found'}, status=status.HTTP_404_NOT_FOUND)
 
-        print(f"request.data.get :: {request.data}")
         serializer = serializers.UserRegistrationSerializer(
             data=request.data)
         if serializer.is_valid(raise_exception=True):
@@ -82,6 +78,8 @@ class UserApiView(APIView):
 
 
 class UserListApiView(APIView):
+    renderer_classes = [UserJSONRenderer]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, formate=None):
         try:

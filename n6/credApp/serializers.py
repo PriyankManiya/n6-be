@@ -8,7 +8,7 @@ class CredentialAppSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Credential
-        fields = ('user_name', 'password', 'active_tf',
+        fields = ('user_name', 'password',
                   'user', 'user_level')
 
     def create(self, validated_data):
@@ -18,8 +18,6 @@ class CredentialAppSerializer(serializers.ModelSerializer):
         cred['password'] = validated_data.get('password')
         cred['user'] = validated_data.get('user')
         cred['user_level'] = validated_data.get('user_level')
-        cred['active_tf'] = validated_data.get('active_tf')
-        print(f"cred['active_tf'] :: {cred['active_tf']}")
         if (cred['user_name'] is None):
             raise serializers.ValidationError(
                 {'error': 'User must have User Name', 'status': 400})
@@ -32,8 +30,6 @@ class CredentialAppSerializer(serializers.ModelSerializer):
         if (cred['user_level'] is None):
             raise serializers.ValidationError(
                 {'error': 'User must have a valid user level id', 'status': 400})
-        if (cred['active_tf'] is None):
-            {'error': 'User must have a valid Activation', 'status': 400}
 
         data = Credential(**cred)
         data.save()
@@ -50,14 +46,13 @@ class CredentialAppSerializer(serializers.ModelSerializer):
     #     return instance
 
 
-
 class UserRegistrationSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(
         style={'input_type': 'password'}, write_only=True)
 
     class Meta:
         model = Credential
-        fields = ('user_name', 'password', 'password2', 'active_tf',
+        fields = ('user_name', 'password', 'password2',
                   'user', 'user_level')
         extra_kwargs = {
             'password': {'write_only': True},
@@ -74,7 +69,6 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         user_name = validated_data['user_name']
-        active_tf = validated_data['active_tf']
         user = validated_data['user']
         user_level = validated_data['user_level']
         password = validated_data['password']
@@ -88,7 +82,6 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
         user = Credential(
             user_name=user_name,
-            active_tf=active_tf,
             user=user,
             user_level=user_level,
             password=make_password(password)
@@ -98,3 +91,19 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         user.save()
         return user
         # return Credential.objects.create_user(**validated_data)
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Credential
+        fields = ('id', 'user_name', 'user', 'user_level',
+                  'updated_at', 'created_at', 'is_admin', 'is_active')
+        extra_kwargs = {
+            'password': {'write_only': True},
+        }
+        extra_kwargs = {
+            'id': {'read_only': True},
+            'user_name': {'read_only': True},
+            'created_at': {'read_only': True},
+            'updated_at': {'read_only': True},
+        }
