@@ -22,4 +22,5 @@ urlpatterns = [
     path('api/cred/', include('credApp.urls')),
     path('api/project/', include('projectApp.urls')),
     path('api/user/', include('userApp.urls')),
+    path('api/userProjectAccess/', include('userProjectAccessApp.urls')),
 ]
