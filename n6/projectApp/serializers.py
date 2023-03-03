@@ -7,7 +7,7 @@ class ProjectApiSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Project
-        fields = ('company', 'name', 'description')
+        fields = ('company', 'name', 'description', 'is_active')
 
     def create(self, validated_data):
 
@@ -34,6 +34,8 @@ class ProjectApiSerializer(serializers.ModelSerializer):
             'description', instance.description)
         instance.company = validated_data.get(
             'company', instance.company)
+        instance.is_active = validated_data.get(
+            'is_active', instance.is_active)
 
         instance.save()
         return instance

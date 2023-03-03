@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 from rest_framework import permissions
 from credApp.renderers import UserJSONRenderer
 from projectApp.models import Project
+from companyApp.models import Company
 from . import serializers
 import json
 
@@ -21,7 +22,19 @@ class ProjectApiView(APIView):
                 project, data=request.data)
             if serializer.is_valid(raise_exception=True):
                 serializer.save()
-                return Response({'status': status.HTTP_200_OK, 'msg': 'Project Data Fetched', 'data': serializer.data}, status=status.HTTP_200_OK)
+                project = serializer.data
+                company_id = project.get('company')
+                company = Company.objects.get(id=company_id)
+                data = {
+                    **project,
+                    'company': {
+                        'id': company.id,
+                        'name': company.name,
+                        'email_address': company.email_address,
+                        'mobile_num': company.mobile_num,
+                    }
+                }
+                return Response({'status': status.HTTP_200_OK, 'msg': 'Project Data Fetched', 'data': data}, status=status.HTTP_200_OK)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         except Exception as e:
@@ -62,9 +75,27 @@ class ProjectListApiView(APIView):
     def get(self, request, formate=None):
         try:
             data = Project.objects.values(
-                'id', 'name', 'company', 'description')
-            projectList = list(data)
-            return Response({'status': status.HTTP_200_OK, 'msg': 'Company Data Fetched', 'data': projectList}, status=status.HTTP_200_OK)
+                'id', 'name', 'company', 'description', 'is_active')
+            temp = []
+
+            for i, obj in enumerate(data):
+                company_id = Project.objects.values(
+                    'company_id')[i]['company_id']
+                company = Company.objects.get(id=company_id)
+                temp.append(
+                    {
+                        **obj,
+                        'company': {
+                            'id': company.id,
+                            'name': company.name,
+                            'email_address': company.email_address,
+                            'mobile_num': company.mobile_num,
+                        }
+                    })
+
+            projectList = list(temp)
+            projectList.sort(key=lambda temp: -temp['id'])
+            return Response({'status': status.HTTP_200_OK, 'msg': 'Project Data Fetched', 'data': projectList}, status=status.HTTP_200_OK)
         except Exception as e:
             print(f"error ::: {e}")
             return Response({'status': status.HTTP_400_BAD_REQUEST, 'msg': 'Error Occured'}, status=status.HTTP_400_BAD_REQUEST)
