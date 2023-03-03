@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'credApp.apps.CredappConfig',
     'projectApp.apps.ProjectappConfig',
     'userApp.apps.UserappConfig',
+    'userProjectAccessApp.apps.UserprojectaccessappConfig',
 ]
 
 MIDDLEWARE = [
