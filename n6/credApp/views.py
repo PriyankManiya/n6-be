@@ -118,6 +118,19 @@ class CredApiView(APIView):
         except Exception as e:
             print(f"error ::: {e}")
             return Response({'status': status.HTTP_400_BAD_REQUEST, 'msg': 'Error Occured'}, status=status.HTTP_400_BAD_REQUEST)
+    
+    def put(self, request, format=None):
+        cred_id = request.data.get('id')
+        try:
+            credential = Credential.objects.get(id=cred_id)
+        except Credential.DoesNotExist:
+            return Response({'status': status.HTTP_404_NOT_FOUND, 'msg': 'Credential not found'}, status=status.HTTP_404_NOT_FOUND)
+        serializer = serializers.CredentialAppUpdateSerializer(
+            credential, data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response({'status': status.HTTP_200_OK, 'msg': 'Credential Data Updated', 'data': serializer.data}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserLoginView(APIView):

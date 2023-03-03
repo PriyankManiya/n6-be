@@ -9,7 +9,7 @@ class CredentialAppSerializer(serializers.ModelSerializer):
     class Meta:
         model = Credential
         fields = ('user_name', 'password',
-                  'user', 'user_level')
+                  'user', 'user_level', 'is_active')
 
     def create(self, validated_data):
 
@@ -36,14 +36,20 @@ class CredentialAppSerializer(serializers.ModelSerializer):
 
         return data
 
-    # def update(self, instance, validated_data):
-    #     instance.name = validated_data.get('name', instance.name)
-    #     instance.email_address = validated_data.get(
-    #         'email_address', instance.email_address)
-    #     instance.mobile_num = validated_data.get(
-    #         'mobile_num', instance.mobile_num)
-    #     instance.save()
-    #     return instance
+
+class CredentialAppUpdateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Credential
+        fields = ('user_level', 'is_active')
+        
+    def update(self, instance, validated_data):
+        instance.user_level = validated_data.get(
+            'user_level', instance.user_level)
+        instance.is_active = validated_data.get(
+            'is_active', instance.is_active)
+        instance.save()
+        return instance
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):

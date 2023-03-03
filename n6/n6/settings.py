@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'companyApp.apps.CompanyappConfig',
     'credApp.apps.CredappConfig',
+    'projectApp.apps.ProjectappConfig',
     'userApp.apps.UserappConfig',
 ]
 

@@ -1,23 +1,10 @@
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
-
-
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.views import APIView
-from . import serializers
-from django.contrib.auth import authenticate
-from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework import permissions
-from .models import Company
-import json
-import jsonpickle
-from json import JSONEncoder
 from credApp.renderers import UserJSONRenderer
-
-
-# Create your views here.
+from companyApp.models import Company
+from . import serializers
 
 
 class CompanyApiView(APIView):
@@ -33,7 +20,7 @@ class CompanyApiView(APIView):
             company, data=request.data)
             if serializer.is_valid(raise_exception=True):
                 serializer.save()
-                return Response({'status': status.HTTP_200_OK, 'msg': 'Company Data Updated', 'data': serializer.data}, status=status.HTTP_200_OK)
+                return Response({'status': status.HTTP_200_OK, 'msg': 'Company Data Fetched', 'data': serializer.data}, status=status.HTTP_200_OK)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             
         except Exception as e:
