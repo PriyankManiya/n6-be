@@ -93,10 +93,8 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             password=make_password(password)
         )
 
-        # user.set_password(password)
         user.save()
         return user
-        # return Credential.objects.create_user(**validated_data)
 
 
 class UserProfileSerializer(serializers.ModelSerializer):

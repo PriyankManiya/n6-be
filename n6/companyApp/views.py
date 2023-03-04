@@ -42,9 +42,7 @@ class CompanyApiView(APIView):
     def put(self, request, format=None):
         company_id = request.data.get('id')
         try:
-            # get the company object using the company ID
             company = Company.objects.get(id=company_id)
-            # replace `name` with the actual name field of your Company model
         except Company.DoesNotExist:
             return Response({'status': status.HTTP_404_NOT_FOUND, 'msg': 'Company not found'}, status=status.HTTP_404_NOT_FOUND)
         serializer = serializers.CompanyRegistrationSerializer(

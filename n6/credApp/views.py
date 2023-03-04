@@ -1,13 +1,10 @@
-from django.shortcuts import render
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from credApp.models import Credential
 from . import serializers
 from userApp.models import UserRole, User
-from companyApp.models import Company
 from rest_framework_simplejwt.tokens import RefreshToken
-from django.contrib.auth import authenticate
 from django.contrib.auth.hashers import check_password
 from rest_framework import permissions
 from credApp.renderers import UserJSONRenderer

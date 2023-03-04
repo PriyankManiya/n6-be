@@ -1,3 +1,4 @@
 from django.contrib import admin
+from userProjectAccessApp.models import UserProjectAccess
 
-# Register your models here.
+admin.site.register(UserProjectAccess)

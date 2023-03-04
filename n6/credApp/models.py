@@ -2,12 +2,6 @@ from django.db import models
 from userApp.models import UserRole, User
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 
-# Create your models here.
-
-# ERD -> Credential
-# stores all credential information for the user accounts
-# TODO change password field data type for encryption
-
 
 # class UserManager(BaseUserManager):
 #     def create_user(self, email, name, tc, password=None, password2=None):
@@ -58,3 +52,9 @@ class Credential(AbstractBaseUser):
 
     USERNAME_FIELD = 'user_name'
     REQUIRED_FIELDS = ['user_level', 'user', 'password', 'is_active']
+
+    def has_perm(self, perm, obj=None):
+        return self.is_admin
+    
+    def has_active(self, perm, obj=None):
+        return self.is_active

@@ -46,7 +46,7 @@ class UserApiView(APIView):
         company_id = request.data.get('company')
 
         try:
-            company = Company.objects.get(id=int(company_id))
+            Company.objects.get(id=int(company_id))
         except Company.DoesNotExist:
             return Response({'status': status.HTTP_404_NOT_FOUND, 'msg': 'Company not found'}, status=status.HTTP_404_NOT_FOUND)
 

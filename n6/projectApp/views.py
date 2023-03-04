@@ -6,7 +6,6 @@ from credApp.renderers import UserJSONRenderer
 from projectApp.models import Project
 from companyApp.models import Company
 from . import serializers
-import json
 
 
 class ProjectApiView(APIView):
