@@ -3,37 +3,31 @@ from userApp.models import UserRole, User
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 
 
-# class UserManager(BaseUserManager):
-#     def create_user(self, email, name, tc, password=None, password2=None):
-#         # """
-#         # Creates and saves a User with the given email, name, tc and password.
-#         # """
-#         # if not email:
-#         #     raise ValueError('Users must have an email address')
+class UserManager(BaseUserManager):
+    def create_user(self, user_name, user_level, user, password=None, password2=None):
+        if not user_name:
+            raise ValueError('Users must have an user_name ')
 
-#         # user = self.model(
-#         #     email=self.normalize_email(email),
-#         #     name=name,
-#         #     tc=tc,
-#         # )
+        data = self.model(
+            user_name=user_name,
+            user_level=user_level,
+            user=user,
+        )
 
-#         # user.set_password(password)
-#         # user.save(using=self._db)
-#         return user
+        data.set_password(password)
+        data.save(using=self._db)
+        return data
 
-#     def create_superuser(self, email, name, tc, password=None, password2=None):
-#         """
-#         Creates and saves a superuser with the given email, name, tc and password.
-#         """
-#         user = self.create_user(
-#             email,
-#             password=password,
-#             name=name,
-#             tc=tc,
-#         )
-#         user.is_admin = True
-#         user.save(using=self._db)
-#         return user
+    def create_superuser(self, user_name, user_level, user, password=None, password2=None):
+        data = self.create_user(
+            user_name,
+            password=password,
+            user_level=user_level,
+            user=user,
+        )
+        data.is_admin = True
+        data.save(using=self._db)
+        return data
 
 
 class Credential(AbstractBaseUser):
@@ -49,6 +43,8 @@ class Credential(AbstractBaseUser):
     is_admin = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    
+    objects = UserManager()
 
     USERNAME_FIELD = 'user_name'
     REQUIRED_FIELDS = ['user_level', 'user', 'password', 'is_active']

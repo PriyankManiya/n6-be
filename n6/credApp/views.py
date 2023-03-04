@@ -8,6 +8,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth.hashers import check_password
 from rest_framework import permissions
 from credApp.renderers import UserJSONRenderer
+from django.contrib.auth import authenticate
 
 
 def get_tokens_for_user(user):
@@ -72,7 +73,7 @@ class CredApiView(APIView):
     def get(self, request, formate=None):
         try:
             user = request.user
-            serializer = serializers.UserProfileSerializer(user)
+            serializer = serializers.CredProfileSerializer(user)
             cred = serializer.data
             user_role_id = cred['user_level']
             user_id = cred['user']
@@ -115,7 +116,7 @@ class CredApiView(APIView):
         except Exception as e:
             print(f"error ::: {e}")
             return Response({'status': status.HTTP_400_BAD_REQUEST, 'msg': 'Error Occured'}, status=status.HTTP_400_BAD_REQUEST)
-    
+
     def put(self, request, format=None):
         cred_id = request.data.get('id')
         try:
@@ -166,3 +167,53 @@ class UserRegistrationView(APIView):
                 json = serializer.data
                 return Response({'msg': 'Registration Success', **token, 'data': json, 'status': status.HTTP_201_CREATED}, status=status.HTTP_201_CREATED)
         return Response({'msg': 'Registration Failed', 'error': [serializer.errors], 'status': status.HTTP_400_BAD_REQUEST}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserChangePasswordView(APIView):
+    renderer_classes = [UserJSONRenderer]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, formate=None):
+
+        userCred = {
+            'password': request.data.get('old_password'),
+            'user_name': request.user.user_name,
+        }
+
+        loginSerializer = serializers.CredLoginSerializer(data=userCred)
+
+        if loginSerializer.is_valid(raise_exception=True):
+            user_name = loginSerializer.data.get('user_name')
+            password = loginSerializer.data.get('password')
+            user = authenticate(**userCred)
+            if user is not None:
+                serializer = serializers.UserChangePasswordSerializer(
+                    data=request.data, context={'user': user})
+                serializer.is_valid(raise_exception=True)
+                return Response({'msg': 'Password Changed Success', 'status': status.HTTP_200_OK}, status=status.HTTP_200_OK)
+            else:
+                return Response({'msg': 'Old Password is not Valid', 'status': status.HTTP_400_BAD_REQUEST}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'error': serializer.errors, 'status': status.HTTP_400_BAD_REQUEST, 'msg': 'Error Occured'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class SendEmailView(APIView):
+    renderer_classes = [UserJSONRenderer]
+
+    def post(self, request, formate=None):
+        serializer = serializers.SendEmailSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response({'msg': 'Password Reset Link Sent Success', 'data': serializer.data, 'status': status.HTTP_200_OK}, status=status.HTTP_200_OK)
+        return Response({'error': serializer.errors, 'status': status.HTTP_400_BAD_REQUEST, 'msg': 'Error Occured'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ResetPasswordView(APIView):
+    renderer_classes = [UserJSONRenderer]
+
+    def post(self, request, cid, token, formate=None):
+        serializer = serializers.ResetPasswordSerializer(
+            data=request.data, context={'cid': cid, 'token': token})
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response({'msg': 'Password Reset Success', 'status': status.HTTP_200_OK}, status=status.HTTP_200_OK)
+        return Response({'error': serializer.errors, 'status': status.HTTP_400_BAD_REQUEST, 'msg': 'Error Occured'}, status=status.HTTP_400_BAD_REQUEST)
