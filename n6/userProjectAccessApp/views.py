@@ -83,8 +83,6 @@ class UserProjectAccessApiView(APIView):
         try:
             userProjectAccess = UserProjectAccess.objects.get(
                 id=int(user_project_access_id))
-            print(f"userProjectAccess ::: {userProjectAccess}")
-
             user_id = userProjectAccess.user.pk
             project_id = userProjectAccess.project.pk
             user = User.objects.get(id=user_id)
