@@ -73,24 +73,42 @@ class ProjectListApiView(APIView):
 
     def get(self, request, formate=None):
         try:
+            user = request.user
+            print('uesr >>>> ', user.user_level_id)
             data = Project.objects.values(
                 'id', 'name', 'company', 'description', 'is_active')
             temp = []
 
             for i, obj in enumerate(data):
-                company_id = Project.objects.values(
-                    'company_id')[i]['company_id']
-                company = Company.objects.get(id=company_id)
-                temp.append(
-                    {
-                        **obj,
-                        'company': {
-                            'id': company.id,
-                            'name': company.name,
-                            'email_address': company.email_address,
-                            'mobile_num': company.mobile_num,
-                        }
-                    })
+
+                if (user.user_level_id == 1 or user.user_level_id == 2):
+                    company_id = Project.objects.values(
+                        'company_id')[i]['company_id']
+                    company = Company.objects.get(id=company_id)
+                    if (user.user_level_id == 1):
+                        temp.append(
+                            {
+                                **obj,
+                                'company': {
+                                    'id': company.id,
+                                    'name': company.name,
+                                    'email_address': company.email_address,
+                                    'mobile_num': company.mobile_num,
+                                }
+                            })
+                    elif (user.user_level_id == 2):
+                        if(obj['is_active'] == True):
+                            temp.append(
+                                {
+                                    **obj,
+                                    'company': {
+                                        'id': company.id,
+                                        'name': company.name,
+                                        'email_address': company.email_address,
+                                        'mobile_num': company.mobile_num,
+                                    }
+                                })
+                            
 
             projectList = list(temp)
             projectList.sort(key=lambda temp: -temp['id'])

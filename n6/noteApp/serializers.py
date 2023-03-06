@@ -38,6 +38,7 @@ class RespondNoteApiSerializer(serializers.ModelSerializer):
 
         return data
 
+
 class NoteApiSerializer(serializers.ModelSerializer):
     class Meta:
         model = Note

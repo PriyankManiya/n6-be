@@ -93,6 +93,7 @@ class CredApiView(APIView):
                     'email_address': user.email_address,
                     'mobile_num': user.mobile_num,
                     'company': {
+                        'id': user.company.id,
                         'name': user.company.name,
                         'email_address': user.company.email_address,
                         'mobile_num': user.company.mobile_num,
@@ -136,13 +137,13 @@ class UserLoginView(APIView):
     def post(self, request, formate=None):
 
         try:
-            username = request.data.get('user_name')
+            username = request.data.get('username')
             password = request.data.get('password')
 
             try:
                 user = Credential.objects.get(user_name=username)
             except Exception as e:
-                return Response({'msg': 'Username or Password is not Valid', 'status': status.HTTP_400_BAD_REQUEST}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({'msg': 'Username or Password is not Valid', 'status': status.HTTP_401_UNAUTHORIZED}, status=status.HTTP_401_UNAUTHORIZED)
 
             password_matches = check_password(password, user.password)
 
@@ -150,10 +151,10 @@ class UserLoginView(APIView):
                 token = get_tokens_for_user(user)
                 return Response({'msg': 'Login Success', **token, 'status': status.HTTP_200_OK}, status=status.HTTP_200_OK)
             else:
-                return Response({'msg': 'Username or Password is not Valid', 'status': status.HTTP_400_BAD_REQUEST}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({'msg': 'Username or Password is not Valid', 'status': status.HTTP_401_UNAUTHORIZED}, status=status.HTTP_401_UNAUTHORIZED)
         except Exception as e:
             print(f"error is ::: {e} <<")
-            return Response({'msg': 'Something Went Wrong', 'error': 'Error Occured', 'status': status.HTTP_400_BAD_REQUEST}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'msg': 'Something Went Wrong', 'error': 'Error Occured', 'status': status.HTTP_401_UNAUTHORIZED}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 class UserRegistrationView(APIView):
@@ -203,8 +204,8 @@ class SendEmailView(APIView):
         serializer = serializers.SendEmailSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
-            return Response({'msg': 'Password Reset Link Sent Success', 'data': serializer.data, 'status': status.HTTP_200_OK}, status=status.HTTP_200_OK)
-        return Response({'error': serializer.errors, 'status': status.HTTP_400_BAD_REQUEST, 'msg': 'Error Occured'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'msg': 'Password Reset Link has been sent', 'data': serializer.data, 'status': status.HTTP_200_OK}, status=status.HTTP_200_OK)
+        return Response({'msg': 'Please Provide Valid Username', 'error': serializer.errors, 'status': status.HTTP_400_BAD_REQUEST, }, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ResetPasswordView(APIView):

@@ -20,11 +20,12 @@ class NoteListApiView(APIView):
     renderer_classes = [UserJSONRenderer]
     permission_classes = [permissions.IsAuthenticated]
 
-    def get(self, request, formate=None):
+    def get(self, request, id, formate=None):
         try:
-            user = request.user
-            if (Credential.has_perm(user, 'is_admin') == False):
-                return Response({'status': status.HTTP_401_UNAUTHORIZED, 'msg': 'Sorry You Do not have enough permissions'}, status=status.HTTP_401_UNAUTHORIZED)
+            proj_id = id
+            requestUser = request.user
+            # if (Credential.has_perm(user, 'is_admin') == False):
+            #     return Response({'status': status.HTTP_401_UNAUTHORIZED, 'msg': 'Sorry You Do not have enough permissions'}, status=status.HTTP_401_UNAUTHORIZED)
 
             note = Note.objects.values(
                 'id', 'user', 'project', 'user', 'responded_note', 'topic', 'content_html', 'read_tf', 'is_active', 'created_at', 'updated_at')
@@ -41,38 +42,74 @@ class NoteListApiView(APIView):
                 obj.pop('created_at')
                 obj.pop('updated_at')
 
-                if (obj.get('responded_note') == 0 or obj.get('responded_note') is None):
-                    temp.append(
-                        {
-                            **obj,
-                            'user': {
-                                'first_name': user.first_name,
-                                'last_name': user.last_name,
-                                'email_address': user.email_address,
-                                'mobile_num': user.mobile_num,
-                                'is_active': user.is_active,
-                                'company_id': user.company.pk,
-                                'company': {
-                                    'name': user.company.name,
-                                    'email_address': user.company.email_address,
-                                    'mobile_num': user.company.mobile_num,
-                                    'is_active': user.company.is_active,
-                                }
-                            },
-                            'project': {
-                                'name': project.name,
-                                'description': project.description,
-                                'is_active': project.is_active,
-                                'company': {
-                                    'name': project.company.name,
-                                    'email_address': project.company.email_address,
-                                    'mobile_num': project.company.mobile_num,
-                                    'is_active': project.company.is_active,
-                                }
-                            },
-                            'updated_at': f"{note_updated_at}",
-                            'created_at': f"{note_created_at}",
-                        })
+                if (Credential.has_perm(requestUser, 'is_admin') == False):
+                    if (str(proj_id) == str(project_id) and obj.get('is_active') == True):
+                        if (obj.get('responded_note') == 0 or obj.get('responded_note') is None):
+                            temp.append(
+                                {
+                                    **obj,
+                                    'user': {
+                                        'first_name': user.first_name,
+                                        'last_name': user.last_name,
+                                        'email_address': user.email_address,
+                                        'mobile_num': user.mobile_num,
+                                        'is_active': user.is_active,
+                                        'company_id': user.company.pk,
+                                        'company': {
+                                            'name': user.company.name,
+                                            'email_address': user.company.email_address,
+                                            'mobile_num': user.company.mobile_num,
+                                            'is_active': user.company.is_active,
+                                        }
+                                    },
+                                    'project': {
+                                        'name': project.name,
+                                        'description': project.description,
+                                        'is_active': project.is_active,
+                                        'company': {
+                                            'name': project.company.name,
+                                            'email_address': project.company.email_address,
+                                            'mobile_num': project.company.mobile_num,
+                                            'is_active': project.company.is_active,
+                                        }
+                                    },
+                                    'updated_at': f"{note_updated_at}",
+                                    'created_at': f"{note_created_at}",
+                                })
+                else:
+                    if (str(proj_id) == str(project_id)):
+                        if (obj.get('responded_note') == 0 or obj.get('responded_note') is None):
+                            temp.append(
+                                {
+                                    **obj,
+                                    'user': {
+                                        'first_name': user.first_name,
+                                        'last_name': user.last_name,
+                                        'email_address': user.email_address,
+                                        'mobile_num': user.mobile_num,
+                                        'is_active': user.is_active,
+                                        'company_id': user.company.pk,
+                                        'company': {
+                                            'name': user.company.name,
+                                            'email_address': user.company.email_address,
+                                            'mobile_num': user.company.mobile_num,
+                                            'is_active': user.company.is_active,
+                                        }
+                                    },
+                                    'project': {
+                                        'name': project.name,
+                                        'description': project.description,
+                                        'is_active': project.is_active,
+                                        'company': {
+                                            'name': project.company.name,
+                                            'email_address': project.company.email_address,
+                                            'mobile_num': project.company.mobile_num,
+                                            'is_active': project.company.is_active,
+                                        }
+                                    },
+                                    'updated_at': f"{note_updated_at}",
+                                    'created_at': f"{note_created_at}",
+                                })
 
             noteList = list(temp)
             noteList.sort(key=lambda temp: -temp['id'])
@@ -191,10 +228,11 @@ class RespondNoteApiView(APIView):
                                 status=status.HTTP_201_CREATED)
 
         return Response({'status': status.HTTP_400_BAD_REQUEST, 'errors': serializer.errors, 'msg': 'Error Occured'}, status=status.HTTP_400_BAD_REQUEST)
+
+
 class NoteApiView(APIView):
     renderer_classes = [UserJSONRenderer]
     permission_classes = [permissions.IsAuthenticated]
-
 
     def post(self, request, formate=None):
         serializer = serializers.NoteApiSerializer(
@@ -210,3 +248,44 @@ class NoteApiView(APIView):
                                 status=status.HTTP_201_CREATED)
 
         return Response({'status': status.HTTP_400_BAD_REQUEST, 'errors': serializer.errors, 'msg': 'Error Occured'}, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, formate=None):
+        try:
+            note_id = int(request.data.get('id'))
+
+            print(f"note_id ::: {note_id}")
+
+            note = Note.objects.get(id=note_id)
+            note.is_active = False
+            note.save()
+            return Response({'status': status.HTTP_200_OK, 'msg': 'Note Disabled'}, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(f"error ::: {e}")
+            return Response({'status': status.HTTP_400_BAD_REQUEST, 'msg': 'Error Occured'}, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request, formate=None):
+        try:
+            note_id = int(request.data.get('id'))
+            note = Note.objects.get(id=note_id)
+            note.is_active = True
+            note.save()
+            return Response({'status': status.HTTP_200_OK, 'msg': 'Note Enabled'}, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(f"error ::: {e}")
+            return Response({'status': status.HTTP_400_BAD_REQUEST, 'msg': 'Error Occured'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class NoteReadApiView(APIView):
+    renderer_classes = [UserJSONRenderer]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def put(self, request, formate=None):
+        try:
+            note_id = int(request.data.get('id'))
+            note = Note.objects.get(id=note_id)
+            note.read_tf = True
+            note.save()
+            return Response({'status': status.HTTP_200_OK, 'msg': 'Note Read'}, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(f"error ::: {e}")
+            return Response({'status': status.HTTP_400_BAD_REQUEST, 'msg': 'Error Occured'}, status=status.HTTP_400_BAD_REQUEST)
