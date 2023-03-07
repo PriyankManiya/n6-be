@@ -27,11 +27,21 @@ def get_tokens_for_user(user):
     }
 
 
+# This class is used to fetch all the credentials of the users
 class CredListApiView(APIView):
     renderer_classes = [UserJSONRenderer]
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, formate=None):
+        """
+        I want to get all the data from the Credential table, and then for each row, I want to get the
+        user_level_id and user_id, and then get the corresponding UserRole and User objects, and then
+        add the user_level_id and user_id to the temp list, and then return the temp list
+        
+        :param request: The request object
+        :param formate: This is the format of the response
+        :return: A list of dictionaries.
+        """
         try:
             loggedInUser = request.user
             data = Credential.objects.values(
@@ -76,11 +86,20 @@ class CredListApiView(APIView):
             return Response({'status': status.HTTP_400_BAD_REQUEST, 'msg': 'Error Occured'}, status=status.HTTP_400_BAD_REQUEST)
 
 
+# It's a view that allows you to get, post and put data to the Credential model
 class CredApiView(APIView):
     renderer_classes = [UserJSONRenderer]
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, formate=None):
+        """
+        I'm trying to get the user's data from the User model and the user's role from the UserRole
+        model and then merge them into one object
+        
+        :param request: The request object passed to the view
+        :param formate: This is the format of the response
+        :return: The user's credentials are being returned.
+        """
         try:
             user = request.user
             serializer = serializers.CredProfileSerializer(user)
@@ -117,6 +136,13 @@ class CredApiView(APIView):
             return Response({'status': status.HTTP_400_BAD_REQUEST, 'msg': 'Error Occured'}, status=status.HTTP_400_BAD_REQUEST)
 
     def post(self, request, formate=None):
+        """
+        It takes a request, validates the data, saves the data, and returns a response
+        
+        :param request: The request object
+        :param formate: This is the format of the response. It can be either JSON or XML
+        :return: The response is being returned in the form of a dictionary.
+        """
         try:
             data = request.data
             serializer = serializers.CredentialAppSerializer(data=data)
@@ -129,6 +155,15 @@ class CredApiView(APIView):
             return Response({'status': status.HTTP_400_BAD_REQUEST, 'msg': 'Error Occured'}, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, format=None):
+        """
+        It takes the id of the credential from the request data, checks if the credential exists, if it
+        does, it updates the credential with the data from the request
+        
+        :param request: The request object is the first parameter to the view. It contains the request
+        data, including the request body, query parameters, and headers
+        :param format: The format of the response
+        :return: The serializer.data is being returned.
+        """
         cred_id = request.data.get('id')
         try:
             credential = Credential.objects.get(id=cred_id)
@@ -142,9 +177,21 @@ class CredApiView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+# It takes the username and password from the request, checks if the username exists in the database,
+# if it does, it checks if the password matches the one in the database, if it does, it returns a
+# token, if it doesn't, it returns an error
 class UserLoginView(APIView):
 
     def post(self, request, formate=None):
+        """
+        It takes the username and password from the request, checks if the username exists in the
+        database, if it does, it checks if the password matches the one in the database, if it does, it
+        returns a token, if it doesn't, it returns an error
+        
+        :param request: The request object
+        :param formate: This is the format of the response
+        :return: The response is a JSON object with the following keys:
+        """
 
         try:
             username = request.data.get('username')
@@ -167,9 +214,23 @@ class UserLoginView(APIView):
             return Response({'msg': 'Something Went Wrong', 'error': 'Error Occured', 'status': status.HTTP_401_UNAUTHORIZED}, status=status.HTTP_401_UNAUTHORIZED)
 
 
+# The UserRegistrationView class is a subclass of the APIView class. It has a post method that takes
+# in a request object and a formate object. The post method creates a serializer object using the
+# UserRegistrationSerializer class. The serializer object is then validated using the is_valid method.
+# If the serializer object is valid, the user is saved and a token is generated for the user. If the
+# user is saved, a json object is created using the data attribute of the serializer object. The json
+# object is then returned as a response. If the serializer object is not valid, an error message is
+# returned as a response
 class UserRegistrationView(APIView):
 
     def post(self, request, formate=None):
+        """
+        It takes a request, validates the data, saves the data, and returns a response
+        
+        :param request: The request object
+        :param formate: This is the format of the response
+        :return: The response is being returned in the form of a dictionary.
+        """
         serializer = serializers.UserRegistrationSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             user = serializer.save()
@@ -180,11 +241,19 @@ class UserRegistrationView(APIView):
         return Response({'msg': 'Registration Failed', 'error': [serializer.errors], 'status': status.HTTP_400_BAD_REQUEST}, status=status.HTTP_400_BAD_REQUEST)
 
 
+# It takes the old password, checks if it's valid, and if it is, it changes the password
 class UserChangePasswordView(APIView):
     renderer_classes = [UserJSONRenderer]
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, formate=None):
+        """
+        It takes the old password, checks if it's valid, then changes the password to the new one
+        
+        :param request: The request object
+        :param formate: This is the format of the response
+        :return: The response is being returned in the form of a dictionary.
+        """
 
         userCred = {
             'password': request.data.get('old_password'),
@@ -229,10 +298,20 @@ class SendEmailView(APIView):
         return Response({'msg': 'Please Provide Valid Username', 'error': serializer.errors, 'status': status.HTTP_400_BAD_REQUEST, }, status=status.HTTP_400_BAD_REQUEST)
 
 
+# It takes the request data, validates it, and if it's valid, it saves it
 class ResetPasswordView(APIView):
     renderer_classes = [UserJSONRenderer]
 
     def post(self, request, cid, token, formate=None):
+        """
+        It takes the request data, validates it, and if it's valid, it saves it
+        
+        :param request: The request object
+        :param cid: The id of the user who is requesting the password reset
+        :param token: The token that was sent to the user's email
+        :param formate: This is the format of the response. It can be either json or xml
+        :return: The response is being returned.
+        """
         serializer = serializers.ResetPasswordSerializer(
             data=request.data, context={'cid': cid, 'token': token})
         if serializer.is_valid(raise_exception=True):
