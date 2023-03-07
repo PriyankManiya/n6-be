@@ -12,6 +12,13 @@ from django.contrib.auth import authenticate
 
 
 def get_tokens_for_user(user):
+    """
+    It creates a new refresh token for the user, and returns the refresh token and the access token
+    associated with it
+    
+    :param user: The user object that you want to generate tokens for
+    :return: A dictionary with two keys: refresh_token and access_token.
+    """
     refresh = RefreshToken.for_user(user)
 
     return {
@@ -26,37 +33,40 @@ class CredListApiView(APIView):
 
     def get(self, request, formate=None):
         try:
+            loggedInUser = request.user
             data = Credential.objects.values(
-                'id', 'user_name', 'user_id', 'user_level_id')
+                'id', 'user_name', 'user_id', 'user_level_id', 'is_active')
             temp = []
+            if loggedInUser.user_level_id == 1:
+                for obj in data:
+                    user_role_id = obj['user_level_id']
+                    user_id = obj['user_id']
+                    userRole = UserRole.objects.get(id=int(user_role_id))
+                    user = User.objects.get(id=int(user_id))
 
-            for obj in data:
-                user_role_id = obj['user_level_id']
-                user_id = obj['user_id']
-                userRole = UserRole.objects.get(id=int(user_role_id))
-                user = User.objects.get(id=int(user_id))
+                    temp.append(
+                        {
+                            **obj,
+                            'user_level_id': user_role_id,
+                            'user_level': {
+                                'role': userRole.role
+                            },
+                            'user_id': user_id,
+                            'user': {
+                                'first_name': user.first_name,
+                                'last_name': user.last_name,
+                                'email_address': user.email_address,
+                                'mobile_num': user.mobile_num,
+                                'company': {
+                                    'name': user.company.name,
+                                    'email_address': user.company.email_address,
+                                    'mobile_num': user.company.mobile_num,
+                                }
 
-                temp.append(
-                    {
-                        **obj,
-                        'user_level_id': user_role_id,
-                        'user_level': {
-                            'role': userRole.role
-                        },
-                        'user_id': user_id,
-                        'user': {
-                            'first_name': user.first_name,
-                            'last_name': user.last_name,
-                            'email_address': user.email_address,
-                            'mobile_num': user.mobile_num,
-                            'company': {
-                                'name': user.company.name,
-                                'email_address': user.company.email_address,
-                                'mobile_num': user.company.mobile_num,
                             }
-
-                        }
-                    })
+                        })
+            else:
+                return Response({'status': status.HTTP_401_UNAUTHORIZED, 'msg': 'Sory You do not have enough Permissions'}, status=status.HTTP_401_UNAUTHORIZED)
 
             credList = list(temp)
             credList.sort(key=lambda temp: -temp['id'])
@@ -197,10 +207,21 @@ class UserChangePasswordView(APIView):
         return Response({'error': serializer.errors, 'status': status.HTTP_400_BAD_REQUEST, 'msg': 'Error Occured'}, status=status.HTTP_400_BAD_REQUEST)
 
 
+# It takes in a username, checks if the username is valid, and if it is, it sends a password reset
+# link to the user's email
 class SendEmailView(APIView):
     renderer_classes = [UserJSONRenderer]
 
     def post(self, request, formate=None):
+        """
+        If the serializer is valid, save the serializer and return a response with a message and the
+        serializer data. If the serializer is not valid, return a response with an error message and the
+        serializer errors
+        
+        :param request: The request object
+        :param formate: This is the format of the data that is being sent to the API
+        :return: The response is a JSON object with the following keys:
+        """
         serializer = serializers.SendEmailSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()

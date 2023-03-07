@@ -8,7 +8,7 @@ from rest_framework.views import APIView
 from rest_framework import permissions
 from credApp.renderers import UserJSONRenderer
 from . import serializers
-
+from attachmentApp.models import Attachment
 
 class AttachmentApiView(APIView):
     renderer_classes = [UserJSONRenderer]
@@ -36,3 +36,12 @@ class AttachmentApiView(APIView):
             serializer.save()
             return Response({'status': status.HTTP_201_CREATED, 'msg': 'Attachment created', 'data': serializer.data}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def delete(self, request, format=None):
+        attachment_id = request.data.get('id')
+        try:
+            attachment = Attachment.objects.get(id=attachment_id)
+        except Attachment.DoesNotExist:
+            return Response({'status': status.HTTP_404_NOT_FOUND, 'msg': 'Attachment not found'}, status=status.HTTP_404_NOT_FOUND)
+        attachment.delete()
+        return Response({'status': status.HTTP_200_OK, 'msg': 'Attachment deleted'}, status=status.HTTP_200_OK)

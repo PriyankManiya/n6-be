@@ -212,5 +212,10 @@ SIMPLE_JWT = {
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
     'http://127.0.0.1:3000',
-    'http://localhost:3002'
+    'http://localhost:3002',
+    'http://localhost:3003',
+    'http://10.0.0.232:3003',
+    'https://10.0.0.232:3003',
+    'http://10.0.0.16:3003',
+    'https://10.0.0.16:3003',
 ]
