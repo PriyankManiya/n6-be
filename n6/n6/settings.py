@@ -29,7 +29,7 @@ SECRET_KEY = 'django-insecure-9chgtc8l+l6id-s24015^f)hlm)2cu-6t)3fq^ack_vq3sa+&^
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
@@ -96,9 +96,9 @@ DATABASES = {
         # 'ENGINE': 'django.db.backends.sqlite3',
         # 'NAME': BASE_DIR / 'db.sqlite3',
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'n6_test_1',
-        'USER': 'kishan',
-        'PASSWORD': 'Admin@123',
+        'NAME': 'n6DB',
+        'USER': 'postgres',
+        'PASSWORD': 'Password1',
         'HOST': '127.0.0.1',
         'PORT': '5432',
     }
@@ -209,8 +209,19 @@ SIMPLE_JWT = {
 
 
 # CORS Settings
-CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3000',
-    'http://127.0.0.1:3000',
-    'http://localhost:3002'
+# CORS_ALLOWED_ORIGINS = [
+#     'http://127.0.0.1:3000',
+#     'http://172.22.2.99:3000',
+#     'http://localhost:3000'
+# ]
+
+CORS_ORIGIN_ALLOW_ALL = True
+
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
 ]

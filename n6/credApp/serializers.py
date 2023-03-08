@@ -172,7 +172,7 @@ class SendEmailSerializer(serializers.Serializer):
             cid = urlsafe_base64_encode(force_bytes(cred.id))
             token = PasswordResetTokenGenerator().make_token(cred)
             # url = 'http://127.0.0.1:8000/api/cred/reset-password/' + cid + '/' + token + '/'
-            url = 'http://localhost:3002/reset-password-link/' + cid + '/' + token + '/'
+            url = 'http://172.22.2.99:3000/reset-password-link/' + cid + '/' + token + '/'
             attrs['url'] = url
 
             # Send Email
