@@ -12,8 +12,11 @@ from userApp.models import User
 from projectApp.models import Project
 from credApp.models import Credential
 from noteApp.models import Note
+from attachmentApp.models import Attachment
 from credApp.renderers import UserJSONRenderer
 from userProjectAccessApp.models import UserProjectAccess
+
+from json import JSONEncoder
 
 
 class NoteListApiView(APIView):
@@ -36,6 +39,29 @@ class NoteListApiView(APIView):
                 project_id = Note.objects.values('project')[
                     i]['project']
                 user = User.objects.get(id=user_id)
+
+                print(' obj >>>> ', obj.get('id'))
+
+                attachmentList = []
+
+                attachment = Attachment.objects.filter(
+                    note_id=obj.get('id')).values('id', 'note_id', 'filename', 'path', 'is_active', 'created_at', 'updated_at')
+                print('attachment >>>> ', attachment)
+
+                attachmentList = [
+                    {
+                        'id': f.get('id'),
+                        'note_id': f.get('note_id'),
+                        'filename': f.get('filename'),
+                        'path': f.get('path'),
+                        'is_active': f.get('is_active'),
+                        'created_at': f"{f.get('created_at')}",
+                        'updated_at': f"{f.get('updated_at')}"
+                    } for f in attachment]
+
+                # if (attachment is not None or attachment != '' or attachment != []) : attachmentList.append(attachment)
+
+                print('attachmentList >>>> ', attachmentList)
                 project = Project.objects.get(id=project_id)
                 note_updated_at = obj.get('updated_at')
                 note_created_at = obj.get('created_at')
@@ -62,6 +88,7 @@ class NoteListApiView(APIView):
                                             'is_active': user.company.is_active,
                                         }
                                     },
+                                    'attachments': attachmentList,
                                     'project': {
                                         'name': project.name,
                                         'description': project.description,
