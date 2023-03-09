@@ -29,7 +29,8 @@ class UserManager(BaseUserManager):
         data.save(using=self._db)
         return data
 
-
+ 
+# The Credential class
 class Credential(AbstractBaseUser):
     user_level = models.ForeignKey(
         UserRole, on_delete=models.CASCADE, blank=True, null=True)

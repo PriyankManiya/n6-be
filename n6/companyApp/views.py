@@ -40,6 +40,14 @@ class CompanyApiView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, format=None):
+        """
+        It takes a company id, finds the company, and updates the company's data with the data in the
+        request
+        
+        :param request: The request object
+        :param format: The format of the response
+        :return: The serializer.data is being returned.
+        """
         company_id = request.data.get('id')
         try:
             company = Company.objects.get(id=company_id)

@@ -6,9 +6,10 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
+
 from . import serializers
 from rest_framework import permissions
-from userApp.models import User
+from userApp.models import User, UserRole
 from companyApp.models import Company
 from credApp.renderers import UserJSONRenderer
 
@@ -103,6 +104,23 @@ class UserListApiView(APIView):
             userList.sort(key=lambda temp: -temp['id'])
 
             return Response({'status': status.HTTP_200_OK, 'msg': 'User Data Fetched', 'data': userList}, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(f"error ::: {e}")
+            return Response({'status': status.HTTP_400_BAD_REQUEST, 'msg': 'Error Occured'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserRoleListApiView(APIView):
+    renderer_classes = [UserJSONRenderer]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, formate=None):
+        try:
+            data = UserRole.objects.values(
+                'id', 'role')
+            userRoleList = list(data)
+            userRoleList.sort(key=lambda data: data['id'])
+
+            return Response({'status': status.HTTP_200_OK, 'msg': 'User Roles Data Fetched', 'data': userRoleList}, status=status.HTTP_200_OK)
         except Exception as e:
             print(f"error ::: {e}")
             return Response({'status': status.HTTP_400_BAD_REQUEST, 'msg': 'Error Occured'}, status=status.HTTP_400_BAD_REQUEST)

@@ -6,7 +6,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('first_name', 'last_name', 'email_address', 'mobile_num','company')
+        fields = ('id','first_name', 'last_name', 'email_address', 'mobile_num','company')
 
     def create(self, validated_data):
         print(f"validated_data ::: {validated_data}")
