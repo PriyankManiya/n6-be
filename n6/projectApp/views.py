@@ -65,6 +65,18 @@ class ProjectApiView(APIView):
             project = serializer.data
             return Response({'status': status.HTTP_200_OK, 'msg': 'Project Data Updated', 'data': project}, status=status.HTTP_200_OK)
         return Response({'status': status.HTTP_404_NOT_FOUND, 'msg': 'Error Occured', 'error': serializer.errors}, status=status.HTTP_404_NOT_FOUND)
+    
+    def delete(self, request, formate=None):
+        try:
+            project_id = request.data.get('id')
+
+            project = Project.objects.get(id=project_id)
+            project.is_active = request.data.get('is_active')
+            project.save()
+            return Response({'status': status.HTTP_200_OK, 'msg': 'Project Status Updated'}, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(f"error ::: {e}")
+            return Response({'status': status.HTTP_400_BAD_REQUEST, 'msg': 'Error Occured'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ProjectListApiView(APIView):
@@ -111,7 +123,8 @@ class ProjectListApiView(APIView):
                             
 
             projectList = list(temp)
-            projectList.sort(key=lambda temp: -temp['id'])
+            projectList.sort(key=lambda temp: (-temp['is_active'], -temp['id']))
+
             return Response({'status': status.HTTP_200_OK, 'msg': 'Project Data Fetched', 'data': projectList}, status=status.HTTP_200_OK)
         except Exception as e:
             print(f"error ::: {e}")

@@ -6,7 +6,7 @@ class CompanyRegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Company
-        fields = ('name', 'email_address', 'mobile_num')
+        fields = ('id','name', 'email_address', 'mobile_num')
 
     def create(self, validated_data):
 
