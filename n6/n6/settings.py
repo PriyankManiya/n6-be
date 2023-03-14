@@ -96,9 +96,13 @@ DATABASES = {
         # 'ENGINE': 'django.db.backends.sqlite3',
         # 'NAME': BASE_DIR / 'db.sqlite3',
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'n6_test_1',
-        'USER': 'kishan',
-        'PASSWORD': 'Admin@123',
+        'NAME': 'n6DB',
+        'USER': 'postgres',
+        'PASSWORD': 'Password1',
+        # Local DB
+        # 'NAME': 'n6_test_1',
+        # 'USER': 'kishan',
+        # 'PASSWORD': 'Admin@123',
         'HOST': '127.0.0.1',
         'PORT': '5432',
     }
