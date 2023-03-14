@@ -5,6 +5,16 @@ from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 
 class UserManager(BaseUserManager):
     def create_user(self, user_name, user_level, user, password=None, password2=None):
+        """
+        It creates a user, saves the user, and returns the user
+        
+        :param user_name: The user_name of the user
+        :param user_level: This is the level of the user
+        :param user: The user model to use for the user
+        :param password: The password to be used for the user
+        :param password2: This is the second password field that the user will fill out
+        :return: The data is being returned.
+        """
         if not user_name:
             raise ValueError('Users must have an user_name ')
 
@@ -19,6 +29,16 @@ class UserManager(BaseUserManager):
         return data
 
     def create_superuser(self, user_name, user_level, user, password=None, password2=None):
+        """
+        It creates a user, and then sets the user's is_admin attribute to True
+        
+        :param user_name: The username of the user
+        :param user_level: This is the level of the user
+        :param user: The user object that is being created
+        :param password: The password for the user
+        :param password2: This is the second password field that we will use to confirm the password
+        :return: The data is being returned.
+        """
         data = self.create_user(
             user_name,
             password=password,
@@ -31,6 +51,7 @@ class UserManager(BaseUserManager):
 
  
 # The Credential class
+
 class Credential(AbstractBaseUser):
     user_level = models.ForeignKey(
         UserRole, on_delete=models.CASCADE, blank=True, null=True)

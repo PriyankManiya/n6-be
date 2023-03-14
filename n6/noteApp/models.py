@@ -3,6 +3,7 @@ from projectApp.models import Project
 from userApp.models import User
 
 
+# A Note is a message that a user can send to another user or to a project
 class Note(models.Model):
     project = models.ForeignKey(
         Project, on_delete=models.CASCADE, blank=True, null=True)

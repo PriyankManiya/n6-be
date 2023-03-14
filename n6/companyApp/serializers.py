@@ -9,6 +9,12 @@ class CompanyRegistrationSerializer(serializers.ModelSerializer):
         fields = ('id','name', 'email_address', 'mobile_num')
 
     def create(self, validated_data):
+        """
+        It updates the company data.
+        
+        :param validated_data: The data that has been validated by the serializer
+        :return: The instance of the object being updated.
+        """
 
         company = {}
         company['name'] = validated_data.get('name')
@@ -30,6 +36,16 @@ class CompanyRegistrationSerializer(serializers.ModelSerializer):
         return data
 
     def update(self, instance, validated_data):
+        """
+        The update() function takes in the instance of the model that we want to update, and the
+        validated_data that we want to update it with. 
+        
+        It then updates the instance with the validated_data, and returns the updated instance
+        
+        :param instance: The instance of the model that is being updated
+        :param validated_data: The data that was validated by the serializer
+        :return: The instance is being returned.
+        """
         instance.name = validated_data.get('name', instance.name)
         instance.email_address = validated_data.get(
             'email_address', instance.email_address)

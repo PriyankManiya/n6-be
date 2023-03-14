@@ -15,6 +15,15 @@ class AttachmentApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, format=None):
+        """
+        It takes a file from the request, saves it to the server, and then saves the file's name, path,
+        and a note to the database
+        
+        :param request: The request object is a HttpRequest object. It contains all the information
+        about the request sent by the client
+        :param format: The format of the response
+        :return: The file is being returned.
+        """
         file = request.FILES.get('file')
         if not file:
             return Response({'error': 'File not found'}, status=status.HTTP_400_BAD_REQUEST)
@@ -37,6 +46,13 @@ class AttachmentApiView(APIView):
             return Response({'status': status.HTTP_201_CREATED, 'msg': 'Attachment created', 'data': serializer.data}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
+        """
+        > This function deletes an attachment from the database
+        
+        :param request: The request object
+        :param format: The format of the response
+        :return: The response is a dictionary with two keys: status and msg.
+        """
     def delete(self, request, format=None):
         attachment_id = request.data.get('id')
         try:

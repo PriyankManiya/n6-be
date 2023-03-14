@@ -4,6 +4,8 @@ from userApp.models import User
 from projectApp.models import Project
 
 
+# UserProjectAccess is a model that has a user, project, access_url, otp, is_active, otp_updated_at,
+# access_url_updated_at, created_at, and updated_at
 class UserProjectAccess(models.Model):
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, blank=True, null=True)

@@ -9,6 +9,12 @@ class AttachmentApiSerializer(serializers.ModelSerializer):
         fields = ('id','note', 'filename', 'path', 'created_at', 'updated_at', 'created_at')
 
     def create(self, validated_data):
+        """
+        If the data is valid, create a new Attachment object and save it to the database
+        
+        :param validated_data: The data that has been validated by the serializer
+        :return: The data that was saved to the database.
+        """
 
         attachment = {}
         attachment['note'] = validated_data.get('note')

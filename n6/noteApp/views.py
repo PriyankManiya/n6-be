@@ -24,6 +24,14 @@ class NoteListApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, id, formate=None):
+        """
+        It fetches all the notes from the database and returns them in a list
+        
+        :param request: The request object
+        :param id: The id of the project
+        :param formate: This is the format of the response
+        :return: A list of notes that are associated with a project.
+        """
         try:
             proj_id = id
             requestUser = request.user
@@ -148,6 +156,13 @@ class RespondNoteApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, formate=None):
+        """
+        It fetches the original note and all the responded notes of the original note
+        
+        :param request: The request object passed in to a view by the framework
+        :param formate: This is the format of the response
+        :return: A list of notes that are responded to the original note.
+        """
         try:
             note_id = int(request.data.get('note_id'))
             user = request.user
@@ -237,6 +252,13 @@ class RespondNoteApiView(APIView):
             return Response({'status': status.HTTP_400_BAD_REQUEST, 'msg': 'Error Occured'}, status=status.HTTP_400_BAD_REQUEST)
 
     def post(self, request, formate=None):
+        """
+        It takes a request, validates it, saves it, and returns a response
+        
+        :param request: The request object
+        :param formate: This is the format of the response
+        :return: The response is being returned in the form of a dictionary.
+        """
         serializer = serializers.RespondNoteApiSerializer(
             data=request.data)
         if serializer.is_valid(raise_exception=True):
@@ -257,6 +279,13 @@ class NoteApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, formate=None):
+        """
+        It takes a request, serializes it, checks if it's valid, saves it, and returns a response
+        
+        :param request: The request object
+        :param formate: This is the format of the response
+        :return: The response is being returned in the form of a dictionary.
+        """
         serializer = serializers.NoteApiSerializer(
             data=request.data)
         if serializer.is_valid(raise_exception=True):
@@ -272,6 +301,14 @@ class NoteApiView(APIView):
         return Response({'status': status.HTTP_400_BAD_REQUEST, 'errors': serializer.errors, 'msg': 'Error Occured'}, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, formate=None):
+        """
+        It takes the id of the note from the request, finds the note with that id, sets the is_active field
+        to False and saves the note
+        
+        :param request: The request object is used to access the request data
+        :param formate: This is the format of the response
+        :return: The response is being returned.
+        """
         try:
             note_id = int(request.data.get('id'))
 
@@ -284,6 +321,14 @@ class NoteApiView(APIView):
             return Response({'status': status.HTTP_400_BAD_REQUEST, 'msg': 'Error Occured'}, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, formate=None):
+        """
+        It takes the note id from the request data, fetches the note from the database, sets the is_active
+        field to True and saves the note
+        
+        :param request: The request object is used to get the request data
+        :param formate: This is the format of the response
+        :return: The response is being returned in the form of a dictionary.
+        """
         try:
             note_id = int(request.data.get('id'))
             note = Note.objects.get(id=note_id)
@@ -300,6 +345,15 @@ class NoteReadApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def put(self, request, formate=None):
+        """
+        It takes the note id from the request, finds the note with that id, sets the read_tf field to True,
+        and saves the note
+        
+        :param request: The request object is the first parameter to the view. It contains the request data,
+        such as the HTTP method, the URL, the headers, and the body
+        :param formate: This is the format of the response
+        :return: A list of all the notes that are unread.
+        """
         try:
             note_id = int(request.data.get('id'))
             note = Note.objects.get(id=note_id)

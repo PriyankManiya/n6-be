@@ -13,6 +13,13 @@ class ProjectApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, formate=None):
+        """
+        It takes a request, and returns a response
+        
+        :param request: The incoming request object
+        :param formate: This is the format of the response
+        :return: A list of all the projects in the database.
+        """
         project_id = request.data.get('id')
         try:
             project = Project.objects.get(id=int(project_id))
@@ -41,6 +48,13 @@ class ProjectApiView(APIView):
             return Response({'status': status.HTTP_400_BAD_REQUEST, 'msg': 'Project Not Found'}, status=status.HTTP_400_BAD_REQUEST)
 
     def post(self, request, formate=None):
+        """
+        If the serializer is valid, save the serializer and return a response with the serializer data
+        
+        :param request: The request object
+        :param formate: This is the format of the response
+        :return: The response is being returned in the form of a dictionary.
+        """
         serializer = serializers.ProjectApiSerializer(
             data=request.data)
         if serializer.is_valid(raise_exception=True):
@@ -53,6 +67,14 @@ class ProjectApiView(APIView):
         return Response({'status': status.HTTP_400_BAD_REQUEST, 'msg': 'Error While adding Project', 'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, format=None):
+        """
+        It takes the project id from the request data, checks if the project exists, if it does, it updates
+        the project with the new data, if it doesn't, it returns a 404 error
+        
+        :param request: The request object
+        :param format: The format of the response
+        :return: The project data is being returned.
+        """
         project_id = request.data.get('id')
         try:
             project = Project.objects.get(id=project_id)
@@ -67,6 +89,14 @@ class ProjectApiView(APIView):
         return Response({'status': status.HTTP_404_NOT_FOUND, 'msg': 'Error Occured', 'error': serializer.errors}, status=status.HTTP_404_NOT_FOUND)
     
     def delete(self, request, formate=None):
+        """
+        It takes a request object, and returns a response object
+        
+        :param request: The request object is the first parameter to any view. It contains the HTTP request
+        that was made to the server
+        :param formate: This is the format of the response
+        :return: The response is being returned in the form of a dictionary.
+        """
         try:
             project_id = request.data.get('id')
 
@@ -84,6 +114,14 @@ class ProjectListApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, formate=None):
+        """
+        If the user is a superuser or a company admin, then get all the projects and their company
+        details. If the user is a company admin, then get only the active projects
+        
+        :param request: The request object
+        :param formate: This is the format of the response
+        :return: The data is being returned in the form of a list of dictionaries.
+        """
         try:
             user = request.user
             print('uesr >>>> ', user.user_level_id)

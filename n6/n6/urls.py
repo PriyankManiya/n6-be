@@ -18,6 +18,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
+# A list of URL patterns.
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/attachment/', include('attachmentApp.urls')),

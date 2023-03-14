@@ -19,6 +19,14 @@ class UserApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, formate=None):
+        """
+        It fetches a user from the database, and then updates the user with the data provided in the
+        request
+        
+        :param request: The request object
+        :param formate: This is the format of the response
+        :return: A list of all the users in the database.
+        """
         try:
             user_id = request.data.get('id')
             user = User.objects.get(id=int(user_id))
@@ -44,6 +52,16 @@ class UserApiView(APIView):
             return Response({'status': status.HTTP_400_BAD_REQUEST, 'msg': 'Please Provide Valid User Id'}, status=status.HTTP_400_BAD_REQUEST)
 
     def post(self, request, formate=None):
+        """
+        If the company exists, create a user
+        
+        :param request: The request object
+        :param formate: This is the format of the data that is being sent to the API
+        :return: The response is a JSON object with the following keys:
+        status: The HTTP status code of the response.
+        msg: A message describing the status of the response.
+        data: The data returned by the API.
+        """
         company_id = request.data.get('company')
 
         try:
@@ -63,6 +81,15 @@ class UserApiView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, format=None):
+        """
+        It gets the user object using the user ID, and then updates the user object with the data provided
+        in the request
+        
+        :param request: The request object contains all the information about the request that was made to
+        the server
+        :param format: This is the format of the response. It can be either JSON or XML
+        :return: The response is being returned in the form of a dictionary.
+        """
         user_id = request.data.get('id')
         try:
             # get the user object using the user ID
@@ -83,6 +110,13 @@ class UserListApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, formate=None):
+        """
+        It fetches all the users from the database and returns the data in the form of a list.
+        
+        :param request: The initial request object sent from the client
+        :param formate: This is the format of the response
+        :return: A list of dictionaries.
+        """
         try:
             data = User.objects.values(
                 'id', 'first_name', 'last_name', 'email_address', 'mobile_num', 'company_id')
@@ -114,6 +148,13 @@ class UserRoleListApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, formate=None):
+        """
+        It fetches all the user roles from the database and returns them in a list
+        
+        :param request: The incoming request
+        :param formate: This is the format of the response. It can be either JSON or XML
+        :return: A list of dictionaries.
+        """
         try:
             data = UserRole.objects.values(
                 'id', 'role')

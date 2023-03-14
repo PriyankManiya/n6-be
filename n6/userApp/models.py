@@ -6,6 +6,8 @@ class UserRole(models.Model):
     role = models.CharField(max_length=255)
 
 
+# This class defines the User model, which has a first_name, last_name, email_address, company,
+# mobile_num, is_active, created_at, and updated_at
 class User(models.Model):
     first_name = models.CharField(max_length=255, blank=True, null=True)
     last_name = models.CharField(max_length=255, blank=True, null=True)

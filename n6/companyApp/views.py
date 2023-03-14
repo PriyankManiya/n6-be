@@ -12,6 +12,12 @@ class CompanyApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, formate=None):
+        """
+        If the company exists, then update the company's data with the data provided in the request
+        
+        :param request: The incoming request
+        :param formate: This is the format of the response
+        """
         company_id = request.data.get('id')
         try:
             company = Company.objects.get(id=int(company_id))
@@ -28,6 +34,13 @@ class CompanyApiView(APIView):
             return Response({'status': status.HTTP_400_BAD_REQUEST, 'msg': 'Company Not Found'}, status=status.HTTP_400_BAD_REQUEST)
 
     def post(self, request, formate=None):
+        """
+        It takes a request, validates the request, saves the request, and returns a response
+        
+        :param request: The request object
+        :param formate: This is the format of the response
+        :return: The response is being returned in the form of a JSON object.
+        """
         serializer = serializers.CompanyRegistrationSerializer(
             data=request.data)
         if serializer.is_valid(raise_exception=True):
@@ -65,6 +78,13 @@ class CompanyListApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, formate=None):
+        """
+        This function is used to fetch all the companies from the database.
+        
+        :param request: The incoming request
+        :param formate: This is the format of the response. It can be either JSON or XML
+        :return: A list of dictionaries.
+        """
         try:
             data = Company.objects.values(
                 'id', 'name', 'email_address', 'mobile_num')

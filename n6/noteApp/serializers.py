@@ -46,6 +46,12 @@ class NoteApiSerializer(serializers.ModelSerializer):
                   'read_tf', 'is_active', 'updated_at', 'created_at')
 
     def create(self, validated_data):
+        """
+        If the note has a project, user, topic, and content_html, then save the note
+        
+        :param validated_data: The data that has been validated by the serializer
+        :return: The data that was saved.
+        """
 
         note = {}
         note['project'] = validated_data.get('project')

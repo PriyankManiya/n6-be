@@ -20,6 +20,14 @@ class UserProjectAccessListApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, formate=None):
+        """
+        It fetches all the data from the UserProjectAccess table and then fetches the data from the User
+        and Project tables and then combines all the data into a single list and then returns the list
+        
+        :param request: The request object
+        :param formate: This is the format of the response
+        :return: A list of all the UserProjectAccess objects in the database.
+        """
         try:
             user = request.user
             if (Credential.has_perm(user, 'is_admin') == False):
@@ -78,6 +86,13 @@ class UserProjectAccessApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, formate=None):
+        """
+        It fetches the user project access data based on the id passed in the request
+        
+        :param request: The request object passed in to the view
+        :param formate: This is the format of the response
+        :return: A list of all the user project accesses
+        """
         loggedInUser = request.user
         user_project_access_id = request.data.get('id')
         try:
@@ -138,6 +153,12 @@ class UserProjectAccessApiView(APIView):
             return Response({'status': status.HTTP_400_BAD_REQUEST, 'msg': 'User Project Access Not Found'}, status=status.HTTP_400_BAD_REQUEST)
 
     def post(self, request, formate=None):
+        """
+        It takes a request, validates the data, saves the data, and returns a response
+        
+        :param request: The request object
+        :param formate: This is the format of the response
+        """
         serializer = serializers.UserProjectAccessSerializer(
             data=request.data)
         if serializer.is_valid(raise_exception=True):
@@ -150,6 +171,13 @@ class UserProjectAccessApiView(APIView):
         return Response({'error': serializer.errors, 'status': status.HTTP_400_BAD_REQUEST, 'msg': 'Error Occurend in User Project Access'}, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, format=None):
+        """
+        It updates the user project access data.
+        
+        :param request: The request object passed in from the view
+        :param format: The format of the response
+        :return: The serializer.data is being returned.
+        """
         user_project_access_id = request.data.get('id')
         try:
             userProjectAccess = UserProjectAccess.objects.get(

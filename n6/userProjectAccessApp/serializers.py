@@ -10,6 +10,12 @@ class UserProjectAccessSerializer(serializers.ModelSerializer):
         fields = ('id', 'user', 'project', 'access_url', 'otp', 'is_active')
 
     def create(self, validated_data):
+        """
+        The function creates a new UserProjectAccess object and saves it to the database
+        
+        :param validated_data: The data that has been validated by the serializer
+        :return: The data that is being returned is the data that is being saved.
+        """
         userProjectAccess = {}
         userProjectAccess['user'] = validated_data.get('user')
         userProjectAccess['project'] = validated_data.get('project')
@@ -31,6 +37,13 @@ class UserProjectAccessSerializer(serializers.ModelSerializer):
         return data
 
     def update(self, instance, validated_data):
+        """
+        It updates the instance of the model.
+        
+        :param instance: The current instance of the object being updated
+        :param validated_data: The data that has been validated by the serializer
+        :return: The instance is being returned.
+        """
 
         instance.user = validated_data.get(
             'user', instance.user)

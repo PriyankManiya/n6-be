@@ -2,6 +2,8 @@ from django.db import models
 from noteApp.models import Note
 
 
+# The Attachment class is a model that has a foreign key to the Note class, a filename, a path, a
+# boolean field, and two date time fields
 class Attachment(models.Model):
     note = models.ForeignKey(
         Note, on_delete=models.CASCADE, blank=True, null=True)

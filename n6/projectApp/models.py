@@ -1,6 +1,8 @@
 from django.db import models
 from companyApp.models import Company
 
+# The Project class is a model that has a foreign key to the Company class, a name, a description, a
+# boolean field, and two date time fields
 class Project(models.Model):
     company = models.ForeignKey(
         Company, on_delete=models.CASCADE, blank=True, null=True)
