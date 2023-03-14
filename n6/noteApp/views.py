@@ -40,13 +40,10 @@ class NoteListApiView(APIView):
                     i]['project']
                 user = User.objects.get(id=user_id)
 
-                print(' obj >>>> ', obj.get('id'))
-
                 attachmentList = []
 
                 attachment = Attachment.objects.filter(
                     note_id=obj.get('id')).values('id', 'note_id', 'filename', 'path', 'is_active', 'created_at', 'updated_at')
-                print('attachment >>>> ', attachment)
 
                 attachmentList = [
                     {
@@ -61,7 +58,6 @@ class NoteListApiView(APIView):
 
                 # if (attachment is not None or attachment != '' or attachment != []) : attachmentList.append(attachment)
 
-                print('attachmentList >>>> ', attachmentList)
                 project = Project.objects.get(id=project_id)
                 note_updated_at = obj.get('updated_at')
                 note_created_at = obj.get('created_at')
@@ -154,7 +150,6 @@ class RespondNoteApiView(APIView):
     def get(self, request, formate=None):
         try:
             note_id = int(request.data.get('note_id'))
-            print(f"note_id ::: {note_id}")
             user = request.user
             note = Note.objects.values(
                 'id', 'user', 'project', 'responded_note', 'topic', 'content_html', 'read_tf', 'is_active', 'created_at', 'updated_at')
@@ -279,8 +274,6 @@ class NoteApiView(APIView):
     def delete(self, request, formate=None):
         try:
             note_id = int(request.data.get('id'))
-
-            print(f"note_id ::: {note_id}")
 
             note = Note.objects.get(id=note_id)
             note.is_active = False
