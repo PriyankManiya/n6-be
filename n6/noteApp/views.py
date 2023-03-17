@@ -155,7 +155,7 @@ class RespondNoteApiView(APIView):
     renderer_classes = [UserJSONRenderer]
     permission_classes = [permissions.IsAuthenticated]
 
-    def get(self, request, formate=None):
+    def get(self, request, id, formate=None):
         """
         It fetches the original note and all the responded notes of the original note
         
@@ -164,7 +164,7 @@ class RespondNoteApiView(APIView):
         :return: A list of notes that are responded to the original note.
         """
         try:
-            note_id = int(request.data.get('note_id'))
+            note_id = int(id)
             user = request.user
             note = Note.objects.values(
                 'id', 'user', 'project', 'responded_note', 'topic', 'content_html', 'read_tf', 'is_active', 'created_at', 'updated_at')
