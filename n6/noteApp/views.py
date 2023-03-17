@@ -143,7 +143,7 @@ class NoteListApiView(APIView):
                                 })
 
             noteList = list(temp)
-            noteList.sort(key=lambda temp: -temp['id'])
+            noteList.sort(key=lambda temp: (-temp['is_active'], -temp['id']))
 
             return Response({'status': status.HTTP_200_OK, 'msg': 'Note Data Fetched', 'data': noteList}, status=status.HTTP_200_OK)
         except Exception as e:
