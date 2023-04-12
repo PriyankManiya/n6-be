@@ -87,8 +87,9 @@ class CompanyListApiView(APIView):
         """
         try:
             data = Company.objects.values(
-                'id', 'name', 'email_address', 'mobile_num')
+                'id', 'name', 'email_address', 'mobile_num', 'is_active')
             companyList = list(data)
+            companyList.sort(key=lambda data: ( -data['is_active'], -data['id']))
             return Response({'status': status.HTTP_200_OK, 'msg': 'Company Data Fetched', 'data': companyList}, status=status.HTTP_200_OK)
         except Exception as e:
             print(f"error ::: {e}")

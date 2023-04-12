@@ -6,7 +6,9 @@ from userApp.models import User
 # boolean field, and two date time fields
 class Project(models.Model):
     company = models.ForeignKey(
-        Company, on_delete=models.CASCADE, blank=True, null=True)
+        Company, on_delete=models.CASCADE, 
+        # related_name='projects',
+        blank=True, null=True)
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, blank=True, null=True)
     name = models.CharField(max_length=255, blank=True, null=True)

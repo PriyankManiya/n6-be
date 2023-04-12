@@ -10,8 +10,8 @@
             "request": "launch",
             "program": "${workspaceFolder}/n6/manage.py",
             "args": [
-                "runserver","172.22.2.99:8000"
-                // "runserver","127.0.0.1:8000"
+                // "runserver","172.22.2.99:8000"
+                "runserver","127.0.0.1:8000"
             ],
             "django": true,
             "justMyCode": true

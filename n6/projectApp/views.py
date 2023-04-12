@@ -27,10 +27,11 @@ class ProjectApiView(APIView):
             serializer = serializers.ProjectApiSerializer(
                 project, data=request.data)
             if serializer.is_valid(raise_exception=True):
-                serializer.save()
+                
                 project = serializer.data
                 company_id = project.get('company')
                 company = Company.objects.get(id=company_id)
+                # company.projects.all()
                 data = {
                     **project,
                     'company': {

@@ -6,7 +6,7 @@ class CompanyRegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Company
-        fields = ('id','name', 'email_address', 'mobile_num')
+        fields = ('id','name', 'email_address', 'mobile_num', 'is_active')
 
     def create(self, validated_data):
         """
@@ -20,6 +20,7 @@ class CompanyRegistrationSerializer(serializers.ModelSerializer):
         company['name'] = validated_data.get('name')
         company['email_address'] = validated_data.get('email_address')
         company['mobile_num'] = validated_data.get('mobile_num')
+        company['is_active'] = validated_data.get('is_active')
 
         if (company['name'] is None):
             raise serializers.ValidationError(
@@ -29,6 +30,8 @@ class CompanyRegistrationSerializer(serializers.ModelSerializer):
                 {'error': 'Company must have a valid email address', 'status': 400})
         if (company['mobile_num'] is None):
             company['mobile_num'] = 0
+        if (company['is_active'] is None):
+            company['is_active'] = True
 
         data = Company(**company)
         data.save()
@@ -51,5 +54,6 @@ class CompanyRegistrationSerializer(serializers.ModelSerializer):
             'email_address', instance.email_address)
         instance.mobile_num = validated_data.get(
             'mobile_num', instance.mobile_num)
+        instance.is_active = validated_data.get('is_active', instance.is_active)
         instance.save()
         return instance
