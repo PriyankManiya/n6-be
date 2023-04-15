@@ -10,7 +10,7 @@ n6-be
 
 - `pip install -r requirements.txt`
 
-# Convert Tables in to DB
+# Convert Models into tables in DB
 
 - `python3 manage.py migrate`
 
@@ -18,7 +18,7 @@ n6-be
 
 - `python3 manage.py makemigrations {app_name}`
 
-# Migrate Table in to Database
+# Migrate Models into tables in DB
 
 - `python3 manage.py migrate`
 
