@@ -6,9 +6,9 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework import permissions
-from credApp.renderers import UserJSONRenderer
+from n6.credApp.renderers import UserJSONRenderer
 from . import serializers
-from attachmentApp.models import Attachment
+from n6.attachmentApp.models import Attachment
 
 class AttachmentApiView(APIView):
     renderer_classes = [UserJSONRenderer]

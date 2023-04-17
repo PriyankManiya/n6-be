@@ -9,13 +9,13 @@ from rest_framework import status
 from rest_framework.views import APIView
 from . import serializers
 from rest_framework import permissions
-from userApp.models import User
-from projectApp.models import Project
-from credApp.models import Credential
-from noteApp.models import Note
-from attachmentApp.models import Attachment
-from credApp.renderers import UserJSONRenderer
-from userProjectAccessApp.models import UserProjectAccess
+from n6.userApp.models import User
+from n6.projectApp.models import Project
+from n6.credApp.models import Credential
+from n6.noteApp.models import Note
+from n6.attachmentApp.models import Attachment
+from n6.credApp.renderers import UserJSONRenderer
+from n6.userProjectAccessApp.models import UserProjectAccess
 
 from django.core import serializers as coreserializers
 
