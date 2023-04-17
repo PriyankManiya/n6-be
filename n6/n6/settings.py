@@ -27,7 +27,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-9chgtc8l+l6id-s24015^f)hlm)2cu-6t)3fq^ack_vq3sa+&^'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DJANGO_DEBUG', 'True')
+
 
 ALLOWED_HOSTS = ['*']
 
@@ -93,18 +94,18 @@ WSGI_APPLICATION = 'n6.wsgi.application'
 
 DATABASES = {
     'default': {
-        # 'ENGINE': 'django.db.backends.sqlite3',
-        # 'NAME': BASE_DIR / 'db.sqlite3',
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'n6DB',
-        'USER': 'postgres',
-        'PASSWORD': 'Password1',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+        # 'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        # 'NAME': 'n6DB',
+        # 'USER': 'postgres',
+        # 'PASSWORD': 'Password1',
         # Local DB
         # 'NAME': 'n6_test_1',
         # 'USER': 'kishan',
         # 'PASSWORD': 'Admin@123',
-        'HOST': '127.0.0.1',
-        'PORT': '5432',
+        # 'HOST': '127.0.0.1',
+        # 'PORT': '5432',
     }
 }
 
