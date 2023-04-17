@@ -1,3 +1,4 @@
+from django.forms import model_to_dict
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
@@ -16,7 +17,10 @@ from attachmentApp.models import Attachment
 from credApp.renderers import UserJSONRenderer
 from userProjectAccessApp.models import UserProjectAccess
 
-from json import JSONEncoder
+from django.core import serializers as coreserializers
+
+
+import json
 
 
 class NoteListApiView(APIView):
@@ -178,6 +182,18 @@ class RespondNoteApiView(APIView):
                     i]['project']
                 user = User.objects.get(id=user_id)
                 project = Project.objects.get(id=project_id)
+                attachmentList = []
+                attachment = Attachment.objects.filter(note=obj.get('id')).values('id', 'note', 'filename', 'path', 'is_active', 'created_at', 'updated_at')
+                attachmentList = [
+                    {
+                        'id': f.get('id'),
+                        'note_id': f.get('note'),
+                        'filename': f.get('filename'),
+                        'path': f.get('path'),
+                        'is_active': f.get('is_active'),
+                        'created_at': f"{f.get('created_at')}",
+                        'updated_at': f"{f.get('updated_at')}"
+                    } for f in attachment]
                 note_updated_at = obj.get('updated_at')
                 note_created_at = obj.get('created_at')
                 obj.pop('created_at')
@@ -212,13 +228,26 @@ class RespondNoteApiView(APIView):
                                     'is_active': project.company.is_active,
                                 }
                             },
+                            'attachments': attachmentList,
                             'updated_at': f"{note_updated_at}",
                             'created_at': f"{note_created_at}",
                         })
 
             respondedNoteList = list(temp)
             respondedNoteList.sort(key=lambda temp: -temp['id'])
-
+            
+            attachment = Attachment.objects.filter(note=original_note.id).values('id', 'note', 'filename', 'path', 'is_active', 'created_at', 'updated_at')
+            attachmentList = [
+                    {
+                        'id': f.get('id'),
+                        'note_id': f.get('note'),
+                        'filename': f.get('filename'),
+                        'path': f.get('path'),
+                        'is_active': f.get('is_active'),
+                        'created_at': f"{f.get('created_at')}",
+                        'updated_at': f"{f.get('updated_at')}"
+                    } for f in attachment]
+            
             json = {
                 'original_note': {
                     "topic": original_note.topic,
@@ -227,6 +256,7 @@ class RespondNoteApiView(APIView):
                     "is_active": original_note.is_active,
                     "updated_at": f"{original_note.updated_at}",
                     "created_at": f"{original_note.created_at}",
+                    "attachments": attachmentList,
                     'user': {
                         'first_name': original_note_user.first_name,
                         'last_name': original_note_user.last_name,
@@ -251,7 +281,7 @@ class RespondNoteApiView(APIView):
             print(f"error ::: {e}")
             return Response({'status': status.HTTP_400_BAD_REQUEST, 'msg': 'Error Occured'}, status=status.HTTP_400_BAD_REQUEST)
 
-    def post(self, request, formate=None):
+    def post(self, request, id, formate=None):
         """
         It takes a request, validates it, saves it, and returns a response
         
@@ -259,6 +289,7 @@ class RespondNoteApiView(APIView):
         :param formate: This is the format of the response
         :return: The response is being returned in the form of a dictionary.
         """
+        print(f"request.data ::: {request.data}")
         serializer = serializers.RespondNoteApiSerializer(
             data=request.data)
         if serializer.is_valid(raise_exception=True):

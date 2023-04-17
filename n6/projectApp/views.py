@@ -1,3 +1,5 @@
+import json
+
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
@@ -6,6 +8,7 @@ from credApp.renderers import UserJSONRenderer
 from projectApp.models import Project
 from companyApp.models import Company
 from . import serializers
+from userProjectAccessApp import serializers as userProjectAccessSerializers 
 
 
 class ProjectApiView(APIView):
@@ -58,8 +61,21 @@ class ProjectApiView(APIView):
         """
         serializer = serializers.ProjectApiSerializer(
             data=request.data)
+        
         if serializer.is_valid(raise_exception=True):
             project = serializer.save()
+            try:
+                body = {
+                    'user': request.user.id,
+                    'project': project.id,
+                }
+                print(f"body ::: {body}")
+                request.data.update(body)
+                userProjectAccess = userProjectAccessSerializers.UserProjectAccessSerializer(data=request.data)
+                if userProjectAccess.is_valid(raise_exception=True):
+                    userProjectAccess.save()
+            except Exception as e:
+                raise e
             if project:
                 json = serializer.data
                 return Response({'status': status.HTTP_201_CREATED, 'msg': 'Project Created',  'data': json},

@@ -30,16 +30,17 @@ class UserProjectAccessListApiView(APIView):
         """
         try:
             user = request.user
-            if (Credential.has_perm(user, 'is_admin') == False):
+            print(f"user.user_level_id ::: {user.user_level_id}")
+            if (int(user.user_level_id) == 3):
                 return Response({'status': status.HTTP_401_UNAUTHORIZED, 'msg': 'Sorry You Do not have enough permissions'}, status=status.HTTP_401_UNAUTHORIZED)
             data = UserProjectAccess.objects.values(
-                'id', 'user', 'project_id', 'access_url', 'is_active')
+                'id', 'user', 'project_id', 'access_url', 'is_active').filter(user_id=user.user_id)
+
             temp = []
             for i, obj in enumerate(data):
                 user_id = UserProjectAccess.objects.values('user')[
                     i]['user']
-                project_id = UserProjectAccess.objects.values('project')[
-                    i]['project']
+                project_id = obj['project_id']
                 user = User.objects.get(id=user_id)
                 project = Project.objects.get(id=project_id)
                 temp.append(
@@ -60,6 +61,7 @@ class UserProjectAccessListApiView(APIView):
                             }
                         },
                         'project': {
+                            'id': project.pk,
                             'name': project.name,
                             'description': project.description,
                             'is_active': project.is_active,
@@ -73,7 +75,7 @@ class UserProjectAccessListApiView(APIView):
                     })
 
             userProjectAccessList = list(temp)
-            userProjectAccessList.sort(key=lambda temp: -temp['id'])
+            userProjectAccessList.sort(key=lambda temp: (-temp['is_active'], -temp['id']))
 
             return Response({'status': status.HTTP_200_OK, 'msg': 'User ProjectAccess Data Fetched', 'data': userProjectAccessList}, status=status.HTTP_200_OK)
         except Exception as e:

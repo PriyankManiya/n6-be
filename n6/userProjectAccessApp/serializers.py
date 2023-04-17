@@ -19,8 +19,8 @@ class UserProjectAccessSerializer(serializers.ModelSerializer):
         userProjectAccess = {}
         userProjectAccess['user'] = validated_data.get('user')
         userProjectAccess['project'] = validated_data.get('project')
-
-        url = f"/user_id={userProjectAccess['user'].id}/project_id={userProjectAccess['project'].id}"
+        
+        url = f"/user_id={userProjectAccess['user'].pk}/project_id={userProjectAccess['project'].pk}"
         userProjectAccess['access_url'] = url
         userProjectAccess['otp'] = 0000
 
