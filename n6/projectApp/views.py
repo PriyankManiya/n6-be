@@ -1,5 +1,3 @@
-import json
-
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
@@ -69,7 +67,6 @@ class ProjectApiView(APIView):
                     'user': request.user.id,
                     'project': project.id,
                 }
-                print(f"body ::: {body}")
                 request.data.update(body)
                 userProjectAccess = userProjectAccessSerializers.UserProjectAccessSerializer(data=request.data)
                 if userProjectAccess.is_valid(raise_exception=True):
@@ -147,9 +144,6 @@ class ProjectListApiView(APIView):
             temp = []
 
             for i, obj in enumerate(data):
-                print('obj >>>> ', obj)
-                print('user.id >>>> ', user.id)
-                print(user.id == obj['user_id'])
                 if (user.user_level_id != 1):
                     if (user.id == obj['user_id']):
                         company_id = Project.objects.values(

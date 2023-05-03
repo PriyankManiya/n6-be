@@ -31,7 +31,7 @@ class UserProjectAccessListApiView(APIView):
         try:
             user = request.user
             print(f"user.user_level_id ::: {user.user_level_id}")
-            if (int(user.user_level_id) == 3):
+            if (int(user.user_level_id) == 4):
                 return Response({'status': status.HTTP_401_UNAUTHORIZED, 'msg': 'Sorry You Do not have enough permissions'}, status=status.HTTP_401_UNAUTHORIZED)
             data = UserProjectAccess.objects.values(
                 'id', 'user', 'project_id', 'access_url', 'is_active').filter(user_id=user.user_id)
